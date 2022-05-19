@@ -8,27 +8,32 @@ public class Product {
     private String label;
     private String description;
     private float price;
-    private ArrayList<String> images;
+    private ArrayList<ProductImage> images;
+    private Category category;
 
+    // Constructors
     public Product(){
-        this.images = new ArrayList<String>();
+        this.images = new ArrayList<ProductImage>();
     }
 
-    public Product(int id, String label, String description, float price) {
+    public Product(int id, String label, String description, float price, Category category) {
         this.setId(id);
         this.setLabel(label);
         this.setDescription(description);
         this.setPrice(price);
-        this.images = new ArrayList<String>();
+        this.setCategory(category);
+        this.images = new ArrayList<ProductImage>();
     }
 
-    public Product(String label, String description, float price) {
+    public Product(String label, String description, float price, Category category) {
         this.setLabel(label);
         this.setDescription(description);
         this.setPrice(price);
-        this.images = new ArrayList<String>();
+        this.setCategory(category);
+        this.images = new ArrayList<ProductImage>();
     }
 
+    // Getters / Setters
     public int getId() {
         return id;
     }
@@ -61,8 +66,17 @@ public class Product {
         this.price = price;
     }
 
-    public void addImage(String imageUrl){
-        this.images.add(imageUrl);
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    // Methods
+    public void addImage(ProductImage image){
+        this.images.add(image);
     }
 
 }
