@@ -12,17 +12,16 @@ public class User {
     public User() {}
 
     public User(int id, String username, String password, LocalDateTime lastLogin) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.lastLogin = lastLogin;
+        this.setId(id);
+        this.setUsername(username);
+        this.setPassword(password);
+        this.setLastLogin(lastLogin);
     }
 
     public User(String username, String password, LocalDateTime lastLogin) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.lastLogin = lastLogin;
+        this.setUsername(username);
+        this.setPassword(password);
+        this.setLastLogin(lastLogin);
     }
 
     public int getId() {
