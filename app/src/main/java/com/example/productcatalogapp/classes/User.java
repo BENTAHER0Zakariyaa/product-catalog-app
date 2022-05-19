@@ -6,22 +6,22 @@ public class User {
 
     private int id;
     private String username;
-    private String password;
-    private LocalDateTime lastLogin;
+    private String token;
+    private Boolean isConnected;
 
     public User() {}
 
-    public User(int id, String username, String password, LocalDateTime lastLogin) {
+    public User(int id, String username, String token, Boolean isConnected) {
         this.setId(id);
         this.setUsername(username);
-        this.setPassword(password);
-        this.setLastLogin(lastLogin);
+        this.setToken(token);
+        this.setConnected(isConnected);
     }
 
-    public User(String username, String password, LocalDateTime lastLogin) {
+    public User(String username, String token, Boolean isConnected) {
         this.setUsername(username);
-        this.setPassword(password);
-        this.setLastLogin(lastLogin);
+        this.setToken(token);
+        this.setConnected(isConnected);
     }
 
     public int getId() {
@@ -40,24 +40,24 @@ public class User {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getToken() {
+        return token;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setToken(String token) {
+        this.token = token;
     }
 
-    public LocalDateTime getLastLogin() {
-        return lastLogin;
+    public Boolean getConnected() {
+        return isConnected;
     }
 
-    public void setLastLogin(LocalDateTime lastLogin) {
-        this.lastLogin = lastLogin;
+    public void setConnected(Boolean connected) {
+        isConnected = connected;
     }
 
     @Override
     public String toString() {
-        return "User (id=" + id + ", username='" + username + "', password='" + password + "', lastLogin=" + lastLogin + ")";
+        return "User (id=" + this.getId() + ", username='" + this.getUsername() + "', token='" + this.getToken() + "', isConnected=" + this.getConnected() + ")";
     }
 }
