@@ -1,0 +1,144 @@
+{
+	"info": {
+		"_postman_id": "10813fc0-4c2a-490b-b1c0-65aef1b5e38c",
+		"name": "Dolibarr",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Categories",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "DOLAPIKEY",
+						"value": "xUOWJCYTfDj1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://demo.datacium.com/erp-crm/api/index.php/categories?type=product",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"datacium",
+						"com"
+					],
+					"path": [
+						"erp-crm",
+						"api",
+						"index.php",
+						"categories"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "product"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Products",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "DOLAPIKEY",
+						"value": "xUOWJCYTfDj1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://demo.datacium.com/erp-crm/api/index.php/products",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"datacium",
+						"com"
+					],
+					"path": [
+						"erp-crm",
+						"api",
+						"index.php",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Categories of a product",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "DOLAPIKEY",
+						"value": "xUOWJCYTfDj1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://demo.datacium.com/erp-crm/api/index.php/products/1/categories",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"datacium",
+						"com"
+					],
+					"path": [
+						"erp-crm",
+						"api",
+						"index.php",
+						"products",
+						"1",
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Documents",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "DOLAPIKEY",
+						"value": "xUOWJCYTfDj1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://demo.datacium.com/erp-crm/api/index.php/documents/?modulepart=product&id=1",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"datacium",
+						"com"
+					],
+					"path": [
+						"erp-crm",
+						"api",
+						"index.php",
+						"documents",
+						""
+					],
+					"query": [
+						{
+							"key": "modulepart",
+							"value": "product"
+						},
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

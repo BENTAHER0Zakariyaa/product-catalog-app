@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                                             if (!DB.isUserExist(currentUser.getId())){
                                                 DB.addUser(currentUser);
                                             }
+                                            Toast.makeText(MainActivity.this, "connected : "+currentUser.toString(), Toast.LENGTH_SHORT).show();
 
                                         } catch (JSONException e) {
                                             e.printStackTrace();
@@ -121,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (currentUser!=null) {
                     currentUser.setConnected(false);
+                    Toast.makeText(MainActivity.this, currentUser.toString(), Toast.LENGTH_SHORT).show();
 
                 }
                 else

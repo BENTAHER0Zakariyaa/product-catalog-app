@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">Product Catalog App</string>
     <string name="main_activity_"></string>
     <string name="main_activity_hint_username_input">Please Enter your user name</string>
@@ -9,6 +10,5 @@
     <string name="main_activity_error_username_required">User name is required</string>
     <string name="main_activity_error_password_required">Password is required</string>
     <string name="main_activity_error_invalid_fields">Invalid fields</string>
-
 
 </resources>
