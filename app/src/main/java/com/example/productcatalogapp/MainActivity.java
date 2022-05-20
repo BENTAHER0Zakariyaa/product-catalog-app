@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox checkBoxSaveSession = null;
     private Button buttonLogin = null;
 
-    private User currentUser = null;
+    private static User currentUser = null;
 
 
 
@@ -117,7 +117,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             else {
+                currentUser = DB.getUser(currentUser.getUsername(), currentUser.getPassword());
 
+                if (currentUser!=null) {
+                    currentUser.setConnected(false);
+
+                }
+                else
+                    Toast.makeText(MainActivity.this, R.string.main_activity_error_invalid_fields, Toast.LENGTH_SHORT).show();
             }
 
         }
@@ -140,10 +147,7 @@ public class MainActivity extends AppCompatActivity {
         this.buttonLogin = this.findViewById(R.id.idButtonLogin);
 
         this.buttonLogin.setOnClickListener(this.buttonLoginOnClickListener);
-        if (DB.getUser(APIHelper.TEST_USER_NAME, APIHelper.TEST_PASSWORD)==null)
-            Toast.makeText(this, "KHAWI", Toast.LENGTH_SHORT).show();
-        else
-            Toast.makeText(this, "3amr", Toast.LENGTH_SHORT).show();
+
     }
 
     public boolean isConnected() throws InterruptedException, IOException {
