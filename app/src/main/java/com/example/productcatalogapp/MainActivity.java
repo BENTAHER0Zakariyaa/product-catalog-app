@@ -1,5 +1,6 @@
 package com.example.productcatalogapp;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox checkBoxSaveSession = null;
     private Button buttonLogin = null;
 
-    private static User currentUser = null;
+    public static User currentUser = null;
 
 
 
@@ -52,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
             currentUser = new User(editTextUserName.getText().toString(), editTextPassword.getText().toString());
 
             boolean isConnected = false;
-            String token = "";
             try {
                 isConnected = isConnected();
             } catch (InterruptedException e) {e.printStackTrace();} catch (IOException e) {
@@ -86,9 +86,11 @@ public class MainActivity extends AppCompatActivity {
                                             currentUser.setId(Integer.valueOf(response.getString("id")));
                                             if (!DB.isUserExist(currentUser.getId())){
                                                 DB.addUser(currentUser);
+
                                             }
                                             Toast.makeText(MainActivity.this, "connected : "+currentUser.toString(), Toast.LENGTH_SHORT).show();
-
+                                            Intent intent = new Intent(MainActivity.this, DashBoardActivity.class);
+                                            startActivity(intent);
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
@@ -123,7 +125,8 @@ public class MainActivity extends AppCompatActivity {
                 if (currentUser!=null) {
                     currentUser.setConnected(false);
                     Toast.makeText(MainActivity.this, currentUser.toString(), Toast.LENGTH_SHORT).show();
-
+                    Intent intent = new Intent(MainActivity.this, DashBoardActivity.class);
+                    startActivity(intent);
                 }
                 else
                     Toast.makeText(MainActivity.this, R.string.main_activity_error_invalid_fields, Toast.LENGTH_SHORT).show();
