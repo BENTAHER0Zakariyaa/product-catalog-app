@@ -1,9 +1,9 @@
 package com.example.productcatalogapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -15,25 +15,22 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.productcatalogapp.API.APIHelper;
 import com.example.productcatalogapp.classes.User;
 import com.example.productcatalogapp.database.DataBaseHelper;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final String APP_NAME = "com.example.productcatalogapp";
 
     public static DataBaseHelper DB = null;
 
@@ -42,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox checkBoxSaveSession = null;
     private Button buttonLogin = null;
 
+    public static SharedPreferences preferences = null;
     public static User currentUser = null;
 
 
@@ -50,21 +48,20 @@ public class MainActivity extends AppCompatActivity {
     {
         public void onClick(View v)
         {
+            buttonLogin.setEnabled(false);
             currentUser = new User(editTextUserName.getText().toString(), editTextPassword.getText().toString());
 
-            boolean isConnected = false;
-            try {
-                isConnected = isConnected();
-            } catch (InterruptedException e) {e.printStackTrace();} catch (IOException e) {
-                e.printStackTrace();
-            }
+            boolean isConnected = isConnected();
+
             currentUser.setConnected(isConnected);
             if(isConnected){
                 if (currentUser.getUsername().equals("")){
                     Toast.makeText(MainActivity.this, R.string.main_activity_error_username_required, Toast.LENGTH_SHORT).show();
+                    buttonLogin.setEnabled(true);
                 }
                 else if (currentUser.getPassword().equals("")){
                     Toast.makeText(MainActivity.this, R.string.main_activity_error_password_required, Toast.LENGTH_SHORT).show();
+                    buttonLogin.setEnabled(true);
                 }
                 else {
                     String URL = APIHelper.API_URL + "/login?login=" + currentUser.getUsername() + "&password=" + currentUser.getPassword();
@@ -86,13 +83,15 @@ public class MainActivity extends AppCompatActivity {
                                             currentUser.setId(Integer.valueOf(response.getString("id")));
                                             if (!DB.isUserExist(currentUser.getId())){
                                                 DB.addUser(currentUser);
-
                                             }
-                                            Toast.makeText(MainActivity.this, "connected : "+currentUser.toString(), Toast.LENGTH_SHORT).show();
-                                            Intent intent = new Intent(MainActivity.this, DashBoardActivity.class);
+                                            Intent intent = new Intent(MainActivity.this, CatalogActivity.class);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                                             startActivity(intent);
+                                            saveSession(currentUser.getId());
+                                            buttonLogin.setEnabled(true);
                                         } catch (JSONException e) {
                                             e.printStackTrace();
+                                            buttonLogin.setEnabled(true);
                                         }
                                     }
 
@@ -107,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
                                 requestInfoQueue.add(requestInfo);
                             } catch (JSONException e) {
                                 e.printStackTrace();
+                                buttonLogin.setEnabled(true);
                             }
                         }
 
@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Toast.makeText(MainActivity.this, R.string.main_activity_error_invalid_fields, Toast.LENGTH_SHORT).show();
+                            buttonLogin.setEnabled(true);
                         }
                     });
                     requestQueue.add(request);
@@ -124,14 +125,16 @@ public class MainActivity extends AppCompatActivity {
 
                 if (currentUser!=null) {
                     currentUser.setConnected(false);
-                    Toast.makeText(MainActivity.this, currentUser.toString(), Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(MainActivity.this, DashBoardActivity.class);
+                    Intent intent = new Intent(MainActivity.this, CatalogActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     startActivity(intent);
+                    saveSession(currentUser.getId());
+                    buttonLogin.setEnabled(true);
                 }
                 else
                     Toast.makeText(MainActivity.this, R.string.main_activity_error_invalid_fields, Toast.LENGTH_SHORT).show();
+                    buttonLogin.setEnabled(true);
             }
-
         }
     };
 
@@ -150,15 +153,50 @@ public class MainActivity extends AppCompatActivity {
 
         this.checkBoxSaveSession = this.findViewById(R.id.idCheckBoxSaveSession);
         this.buttonLogin = this.findViewById(R.id.idButtonLogin);
+        buttonLogin.setEnabled(false);
+
+        preferences = getSharedPreferences(APP_NAME, this.MODE_PRIVATE);
+        boolean isSaved = preferences.getBoolean("isSaved", false);
+        if (isSaved){
+            int id = preferences.getInt("id", -1);
+            if (id != -1)
+            {
+                currentUser = DB.getUser(id);
+                if (currentUser != null) {
+                    currentUser.setConnected(isConnected());
+                    Intent intent = new Intent(MainActivity.this, CatalogActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    startActivity(intent);
+                    saveSession(currentUser.getId());
+                    buttonLogin.setEnabled(true);
+                }
+            }
+        }else{
+            buttonLogin.setEnabled(true);
+        }
 
         this.buttonLogin.setOnClickListener(this.buttonLoginOnClickListener);
-
     }
 
-    public boolean isConnected() throws InterruptedException, IOException {
-        String command = "ping -c 1 google.com";
-        return Runtime.getRuntime().exec(command).waitFor() == 0;
+    public boolean isConnected() {
+        try {
+            String command = "ping -c 1 google.com";
+            return Runtime.getRuntime().exec(command).waitFor() == 0;
+        } catch (InterruptedException e) {
+            return false;
+        } catch (IOException e) {
+            return false;
+        }
     }
+
+    public void saveSession(int id){
+        preferences.edit()
+                .putBoolean("isSaved", this.checkBoxSaveSession.isChecked())
+                .putInt("id", id)
+                .apply();
+    }
+
+
 
 
 

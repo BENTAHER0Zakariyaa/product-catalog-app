@@ -10,5 +10,7 @@
     <string name="main_activity_error_username_required">User name is required</string>
     <string name="main_activity_error_password_required">Password is required</string>
     <string name="main_activity_error_invalid_fields">Invalid fields</string>
+    <string name="dashboard_activity_text_logout_button">LOGOUT</string>
+    <string name="dashboard_activity_text_update_button">UPDATE</string>
 
 </resources>

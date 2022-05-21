@@ -139,6 +139,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return user;
     }
 
+    public User getUser(int id){
+        User user = null;
+        String query = " SELECT * FROM " + TABLE_USERS + " WHERE " + KEY_USER_ID + " = " + id ;
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()) {
+            user = new User(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3),cursor.getInt(4) == 1);
+        }
+        cursor.close();
+        return user;
+    }
+
     public void addUser(User user){
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues cv = new ContentValues();
