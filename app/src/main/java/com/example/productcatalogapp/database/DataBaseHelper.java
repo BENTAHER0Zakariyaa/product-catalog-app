@@ -7,8 +7,8 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
+import com.example.productcatalogapp.classes.Category;
 import com.example.productcatalogapp.classes.User;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
@@ -162,5 +162,29 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_USERS, null, cv);
         db.close();
     }
+
+    public boolean isCategoryExist(int id){
+        String query = " SELECT * FROM " + TABLE_CATEGORIES + " WHERE " + KEY_CATEGORY_ID + " = " + Integer.valueOf(id);
+        SQLiteDatabase db = this.getReadableDatabase();
+        long count = DatabaseUtils.queryNumEntries(db, TABLE_USERS);
+        db.close();
+        return count != 0;
+    }
+
+    public long addCategory(Category category){
+        if (!isCategoryExist(category.getId())){
+            SQLiteDatabase db = this.getReadableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put(KEY_CATEGORY_ID, category.getId());
+            cv.put(KEY_CATEGORY_ID_PARENT_ID, category.getParentId());
+            cv.put(KEY_CATEGORY_NAME, category.getName());
+            long added = db.insert(TABLE_CATEGORIES, null, cv);
+            db.close();
+            return added;
+        }
+        return 0;
+    }
+
+
 
 }

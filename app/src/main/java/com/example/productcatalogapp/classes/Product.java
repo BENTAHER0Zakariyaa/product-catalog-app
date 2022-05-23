@@ -79,4 +79,18 @@ public class Product {
         this.images.add(image);
     }
 
+
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", label='" + label + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", images=" + images.size() +
+                ", category=" + category.getName() +
+                '}';
+    }
+
 }

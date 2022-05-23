@@ -2,21 +2,31 @@ package com.example.productcatalogapp.classes;
 
 public class Category {
 
-    private int id;
+    private Integer id;
+    private Integer parentId;
     private String name;
 
     public Category(){}
 
-    public Category(int id, String name){
+    public Category(Integer id, String name, Integer parentId){
         this.setId(id);
         this.setName(name);
+        this.setParentId(parentId);
     }
 
-    public int getId() {
+    public int getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
