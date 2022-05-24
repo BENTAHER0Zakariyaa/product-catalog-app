@@ -14,6 +14,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +29,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.productcatalogapp.API.APIHelper;
+import com.example.productcatalogapp.adapters.MainGridViewAdapter;
 import com.example.productcatalogapp.classes.Category;
 import com.example.productcatalogapp.classes.Product;
 import com.example.productcatalogapp.classes.ProductImage;
@@ -49,6 +52,9 @@ import java.util.Map;
 
 public class CatalogActivity extends AppCompatActivity {
 
+    // TAGS
+    private static final String LOG_DATABASE_TAG = "DATABASE";
+
     private static final String CATALOG_ACTIVITY_IMAGES_FOLDER = "/images";
 
     private ArrayList<Category> categories = null;
@@ -56,14 +62,14 @@ public class CatalogActivity extends AppCompatActivity {
 
     private Button buttonLogout = null;
     private Button buttonUpdate = null;
+    private RecyclerView recyclerViewProduct = null;
+
+    MainGridViewAdapter mainGridViewAdapter = null;
 
     private View.OnClickListener buttonLogoutOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            MainActivity.preferences.edit()
-                    .putBoolean("isSaved", false)
-                    .putInt("id", -1)
-                    .apply();
+            MainActivity.preferences.edit().putBoolean("isSaved", false).putInt("id", -1).apply();
             finish();
         }
     };
@@ -72,7 +78,7 @@ public class CatalogActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             updateCategory("product");
-            updateProduct();
+
         }
     };
 
@@ -83,18 +89,30 @@ public class CatalogActivity extends AppCompatActivity {
 
         this.buttonLogout = this.findViewById(R.id.idButtonLogout);
         this.buttonUpdate = this.findViewById(R.id.idButtonUpdate);
+        this.recyclerViewProduct = this.findViewById(R.id.idRecyclerViewProducts);
 
         this.buttonLogout.setOnClickListener(this.buttonLogoutOnClickListener);
         this.buttonUpdate.setOnClickListener(this.buttonUpdateOnClickListener);
 
+        products = MainActivity.DB.getProducts();
+        fillGrid();
 
+    }
+
+
+    public void fillGrid(){
+        mainGridViewAdapter = new MainGridViewAdapter(this, products);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false);
+
+        this.recyclerViewProduct.setLayoutManager(gridLayoutManager);
+        this.recyclerViewProduct.setAdapter(mainGridViewAdapter);
     }
 
 
     void updateCategory(String type){
         RequestQueue requestCategoriesQueue = Volley.newRequestQueue(CatalogActivity.this);
         String URL = APIHelper.API_URL + "/categories?type="+type;
-
         JsonArrayRequest requestCategories = new JsonArrayRequest(Request.Method.GET, URL, null, new Response.Listener<JSONArray>(){
             @Override
             public void onResponse(JSONArray response) {
@@ -107,11 +125,13 @@ public class CatalogActivity extends AppCompatActivity {
                         c.setName(category.getString("label"));
                         c.setParentId(category.getInt("fk_parent"));
                         categories.add(c);
-                        Log.d("Category", "onResponse: " + MainActivity.DB.addCategory(c));
+                        Log.d(LOG_DATABASE_TAG, "Is Category ADDED : " + MainActivity.DB.addCategory(c));
+                        Log.d(LOG_DATABASE_TAG, c.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+                updateProduct();
             }
         }, null){
             @Override
@@ -146,6 +166,8 @@ public class CatalogActivity extends AppCompatActivity {
                         c.setParentId(product.getJSONObject("categories").getInt("parentId"));
                         c.setName(product.getJSONObject("categories").getString("label"));
 
+                        p.setCategory(c);
+
                         JSONArray images = product.getJSONArray("images");
 
                         for (int j = 0; j < images.length() ; j++){
@@ -155,19 +177,19 @@ public class CatalogActivity extends AppCompatActivity {
                             image.setFileName(images.getJSONObject(j).getString("filename"));
                             image.setFilePath(images.getJSONObject(j).getString("filepath"));
                             image.setPath("/"+image.getFilePath()+"/"+image.getFileName());
+                            image.setProductId(p.getId());
                             p.addImage(image);
                             DownloadImage(APIHelper.DOCUMENTS_PATH+image.getPath(), "/"+image.getFilePath(), "/"+image.getFileName());
                         }
-                        p.setCategory(c);
+                        // here
                         products.add(p);
+                        MainActivity.DB.addProduct(p);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
 
-                for (int i = 0; i < products.size(); i++) {
-                    Log.d("proc", "onClick: " + products.get(i).toString());
-                }
+                fillGrid();
             }
         }, null){
             @Override
@@ -181,21 +203,6 @@ public class CatalogActivity extends AppCompatActivity {
     }
 
 
-    public static Bitmap getBitmapFromURL(String src) {
-        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
 
     void DownloadImage(String ImageUrl,String Dir,String ImageName) {
 
@@ -203,9 +210,9 @@ public class CatalogActivity extends AppCompatActivity {
                 ContextCompat.checkSelfPermission(CatalogActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(CatalogActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MainActivity.READ_STORAGE_PERMISSION_CODE);
                 ActivityCompat.requestPermissions(CatalogActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MainActivity.WRITE_STORAGE_PERMISSION_CODE);
-            showToast("Need Permission to access storage for Downloading Image");
+//            showToast("Need Permission to access storage for Downloading Image");
         } else {
-            showToast("Downloading Image...");
+//            showToast("Downloading Image...");
             new DownloadsImage().execute(ImageUrl, Dir, ImageName);
         }
     }
@@ -261,7 +268,7 @@ public class CatalogActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            showToast("Image Saved!");
+//            showToast("Image Saved!");
         }
     }
 

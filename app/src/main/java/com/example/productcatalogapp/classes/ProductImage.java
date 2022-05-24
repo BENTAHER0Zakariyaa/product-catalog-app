@@ -3,6 +3,7 @@ package com.example.productcatalogapp.classes;
 public class ProductImage {
 
     private Integer id;
+    private Integer productId;
     private String fileName;
     private String filePath;
     private String name;
@@ -10,8 +11,9 @@ public class ProductImage {
 
     public ProductImage(){}
 
-    public ProductImage(Integer id, String fileName, String filePath, String name, String path) {
+    public ProductImage(Integer id, Integer productId, String fileName, String filePath, String name, String path) {
         this.setId(id);
+        this.setProductId(productId);
         this.setFileName(fileName);
         this.setFilePath(filePath);
         this.setName(name);
@@ -26,6 +28,13 @@ public class ProductImage {
         this.id = id;
     }
 
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
     public String getFileName() {
         return fileName;
     }

@@ -6,16 +6,22 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.media.Image;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.example.productcatalogapp.classes.Category;
+import com.example.productcatalogapp.classes.Product;
+import com.example.productcatalogapp.classes.ProductImage;
 import com.example.productcatalogapp.classes.User;
+
+import java.util.ArrayList;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
     // Database Info
     private static final String DATABASE_NAME = "productCatalogApp";
-    private static final int DATABASE_VERSION= 1;
+    private static final int DATABASE_VERSION= 2;
 
     // Table Names
     private static final String TABLE_ = "";
@@ -50,7 +56,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String KEY_PRODUCT_IMAGES_ = "";
     private static final String KEY_PRODUCT_IMAGES_ID = "id";
     private static final String KEY_PRODUCT_IMAGES_PRODUCT_ID = "productId";
-    private static final String KEY_PRODUCT_IMAGES_PATH = "path";
+    private static final String KEY_PRODUCT_IMAGES_FULL_PATH = "fullPath";
+    private static final String KEY_PRODUCT_IMAGES_DIR = "dir";
+    private static final String KEY_PRODUCT_IMAGES_FILE_NAME = "fileName";
 
     public DataBaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -90,7 +98,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 "(" +
                 KEY_PRODUCT_IMAGES_ID + " INTEGER PRIMARY KEY NOT NULL," +
                 KEY_PRODUCT_IMAGES_PRODUCT_ID + " INTEGER NOT NULL," +
-                KEY_PRODUCT_IMAGES_PATH + " TEXT NOT NULL," +
+                KEY_PRODUCT_IMAGES_FULL_PATH + " TEXT NOT NULL," +
+                KEY_PRODUCT_IMAGES_DIR + " TEXT NOT NULL," +
+                KEY_PRODUCT_IMAGES_FILE_NAME + " TEXT NOT NULL," +
                 "FOREIGN KEY(" + KEY_PRODUCT_IMAGES_PRODUCT_ID + ") REFERENCES " + TABLE_PRODUCTS + "(" + KEY_PRODUCT_ID + ")" +
                 ")";
 
@@ -120,7 +130,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean isUserExist(int id){
-        String query = " SELECT * FROM " + TABLE_USERS + " WHERE " + KEY_USER_ID + " = " + Integer.valueOf(id);
         SQLiteDatabase db = this.getReadableDatabase();
         long count = DatabaseUtils.queryNumEntries(db, TABLE_USERS);
         db.close();
@@ -164,11 +173,26 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean isCategoryExist(int id){
-        String query = " SELECT * FROM " + TABLE_CATEGORIES + " WHERE " + KEY_CATEGORY_ID + " = " + Integer.valueOf(id);
         SQLiteDatabase db = this.getReadableDatabase();
-        long count = DatabaseUtils.queryNumEntries(db, TABLE_USERS);
+        long count = DatabaseUtils.queryNumEntries(db, TABLE_CATEGORIES);
         db.close();
         return count != 0;
+    }
+
+    public Category getCategory(int id){
+        Category category = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectCategoryQuery = " SELECT * FROM " + TABLE_CATEGORIES + " WHERE " + KEY_CATEGORY_ID + " = " + id ;
+        Cursor categoryCursor = db.rawQuery(selectCategoryQuery, null);
+        if (categoryCursor.moveToFirst()) {
+            category = new Category();
+            category.setId(categoryCursor.getInt(0));
+            category.setParentId(categoryCursor.getInt(1));
+            category.setName(categoryCursor.getString(2));
+        }
+        categoryCursor.close();
+        db.close();
+        return category;
     }
 
     public long addCategory(Category category){
@@ -185,6 +209,103 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return 0;
     }
 
+    public boolean isProductExist(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        long count = DatabaseUtils.queryNumEntries(db, TABLE_PRODUCTS);
+        db.close();
+        return count != 0;
+    }
+
+    public boolean isProductImageExist(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        long count = DatabaseUtils.queryNumEntries(db, TABLE_PRODUCT_IMAGES);
+        db.close();
+        return count != 0;
+    }
+
+    public void addProduct(Product product) {
+        if (!isProductExist(product.getId())){
+            SQLiteDatabase db = this.getReadableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put(KEY_PRODUCT_ID, product.getId());
+            cv.put(KEY_PRODUCT_CATEGORY_ID, product.getCategory().getId());
+            cv.put(KEY_PRODUCT_TITLE, product.getLabel());
+            cv.put(KEY_PRODUCT_DESCRIPTION, product.getDescription());
+            cv.put(KEY_PRODUCT_PRICE, product.getPrice());
+            db.insert(TABLE_PRODUCTS, null, cv);
+            db.close();
+
+            ArrayList<ProductImage> productImages = product.getImages();
+            for (int j = 0; j < productImages.size(); j++) {
+                ProductImage image = productImages.get(j);
+                addProductImage(image);
+            }
+
+        }
+    }
+
+    public ArrayList<Product> getProducts(){
+        ArrayList<Product> products = null;
+        String selectProductsQuery = "SELECT * FROM " + TABLE_PRODUCTS ;
+
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursorProducts = db.rawQuery(selectProductsQuery, null);
+        Log.d("COUNT", "getProducts: " + cursorProducts.getCount());
+        if (cursorProducts.moveToFirst()){
+            products = new ArrayList<Product>();
+            do {
+                Product p = new Product();
+                p.setId(cursorProducts.getInt(0));
+                p.setCategory(getCategory(p.getId()));
+                p.setLabel(cursorProducts.getString(2));
+                p.setDescription(cursorProducts.getString(3));
+                p.setPrice(cursorProducts.getFloat(4));
+                p.setImages(getProductImage(p.getId()));
+                products.add(p);
+            } while(cursorProducts.moveToNext());
+        }
+        cursorProducts.close();
+        db.close();
+        return products;
+    }
+
+    public void addProductImage(ProductImage image) {
+        if (!isProductImageExist(image.getId())){
+            SQLiteDatabase db = this.getReadableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put(KEY_PRODUCT_IMAGES_ID, image.getId());
+            cv.put(KEY_PRODUCT_IMAGES_DIR, image.getFilePath());
+            cv.put(KEY_PRODUCT_IMAGES_FILE_NAME, image.getFileName());
+            cv.put(KEY_PRODUCT_IMAGES_FULL_PATH, image.getPath());
+            cv.put(KEY_PRODUCT_IMAGES_PRODUCT_ID, image.getProductId());
+            db.insert(TABLE_PRODUCT_IMAGES, null, cv);
+            db.close();
+        }
+    }
+
+    public ArrayList<ProductImage> getProductImage(int id){
+        ArrayList<ProductImage> images = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectProductImageQuery = " SELECT * FROM " + TABLE_PRODUCT_IMAGES + " WHERE " + KEY_PRODUCT_IMAGES_PRODUCT_ID + " = " + id ;
+        Cursor productImageCursor = db.rawQuery(selectProductImageQuery, null);
+        if (productImageCursor.moveToFirst()) {
+            images = new ArrayList<ProductImage>();
+            do {
+                ProductImage image = new ProductImage();
+                image.setId(productImageCursor.getInt(0));
+                image.setProductId(productImageCursor.getInt(1));
+                image.setPath(productImageCursor.getString(2));
+                image.setFilePath(productImageCursor.getString(3));
+                image.setFileName(productImageCursor.getString(4));
+                images.add(image);
+
+            } while(productImageCursor.moveToNext());
+        }
+        productImageCursor.close();
+        db.close();
+        return images;
+    }
 
 
 }

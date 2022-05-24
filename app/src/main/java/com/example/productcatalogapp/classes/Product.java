@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Product {
 
-    private int id;
+    private Integer id;
     private String label;
     private String description;
     private float price;
@@ -16,7 +16,7 @@ public class Product {
         this.images = new ArrayList<ProductImage>();
     }
 
-    public Product(int id, String label, String description, float price, Category category) {
+    public Product(Integer id, String label, String description, float price, Category category) {
         this.setId(id);
         this.setLabel(label);
         this.setDescription(description);
@@ -34,11 +34,11 @@ public class Product {
     }
 
     // Getters / Setters
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -79,7 +79,13 @@ public class Product {
         this.images.add(image);
     }
 
+    public void setImages(ArrayList<ProductImage> images){
+        this.images = images;
+    }
 
+    public ArrayList<ProductImage> getImages() {
+        return images;
+    }
 
     @Override
     public String toString() {
