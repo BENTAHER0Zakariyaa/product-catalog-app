@@ -87,14 +87,18 @@ public class CatalogActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_catalog);
 
+        // INIT VIEWS
         this.buttonLogout = this.findViewById(R.id.idButtonLogout);
         this.buttonUpdate = this.findViewById(R.id.idButtonUpdate);
         this.recyclerViewProduct = this.findViewById(R.id.idRecyclerViewProducts);
-
+        // SET EVENTS
         this.buttonLogout.setOnClickListener(this.buttonLogoutOnClickListener);
         this.buttonUpdate.setOnClickListener(this.buttonUpdateOnClickListener);
 
+        // IF OFFLINE DO
         products = MainActivity.DB.getProducts();
+
+
         fillGrid();
 
     }
@@ -116,21 +120,31 @@ public class CatalogActivity extends AppCompatActivity {
         JsonArrayRequest requestCategories = new JsonArrayRequest(Request.Method.GET, URL, null, new Response.Listener<JSONArray>(){
             @Override
             public void onResponse(JSONArray response) {
+
                 categories = new ArrayList<Category>();
+
                 for (int i=0; i < response.length(); i++) {
                     try {
                         JSONObject category = response.getJSONObject(i);
+
                         Category c = new Category();
+
                         c.setId(category.getInt("id"));
-                        c.setName(category.getString("label"));
                         c.setParentId(category.getInt("fk_parent"));
+                        c.setName(category.getString("label"));
+
                         categories.add(c);
-                        Log.d(LOG_DATABASE_TAG, "Is Category ADDED : " + MainActivity.DB.addCategory(c));
-                        Log.d(LOG_DATABASE_TAG, c.toString());
+
+                        long isAdded = MainActivity.DB.addCategory(c);
+
+                        Log.d(LOG_DATABASE_TAG, "Is Category ADDED TO ARRAY LIST: " + c.toString());
+                        Log.d(LOG_DATABASE_TAG, "Is Category ADDED TO DATABASE : " + isAdded);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+
                 updateProduct();
             }
         }, null){
@@ -146,22 +160,25 @@ public class CatalogActivity extends AppCompatActivity {
 
     void updateProduct(){
         RequestQueue requestProductsQueue = Volley.newRequestQueue(CatalogActivity.this);
-        String URL = "https://demo.datacium.com/erp-crm/getProducts.php";
-
-        JsonArrayRequest requestProducts = new JsonArrayRequest(Request.Method.GET, URL, null, new Response.Listener<JSONArray>(){
+        JsonArrayRequest requestProducts = new JsonArrayRequest(Request.Method.GET, APIHelper.CUSTOM_API_URL, null, new Response.Listener<JSONArray>(){
             @Override
             public void onResponse(JSONArray response) {
+
                 products = new ArrayList<Product>();
                 for (int i=0; i < response.length(); i++) {
                     try {
+
                         JSONObject product = response.getJSONObject(i);
+
                         Product p = new Product();
+
                         p.setId(product.getInt("id"));
                         p.setLabel(product.getString("label"));
                         p.setDescription(product.getString("description"));
                         p.setPrice((float)product.getDouble("price"));
 
                         Category c = new Category();
+
                         c.setId(product.getJSONObject("categories").getInt("id"));
                         c.setParentId(product.getJSONObject("categories").getInt("parentId"));
                         c.setName(product.getJSONObject("categories").getString("label"));
@@ -171,19 +188,28 @@ public class CatalogActivity extends AppCompatActivity {
                         JSONArray images = product.getJSONArray("images");
 
                         for (int j = 0; j < images.length() ; j++){
+
                             ProductImage image = new ProductImage();
+
                             image.setId(images.getJSONObject(j).getInt("id"));
                             image.setName(images.getJSONObject(j).getString("label"));
                             image.setFileName(images.getJSONObject(j).getString("filename"));
                             image.setFilePath(images.getJSONObject(j).getString("filepath"));
                             image.setPath("/"+image.getFilePath()+"/"+image.getFileName());
                             image.setProductId(p.getId());
+
                             p.addImage(image);
+
                             DownloadImage(APIHelper.DOCUMENTS_PATH+image.getPath(), "/"+image.getFilePath(), "/"+image.getFileName());
                         }
-                        // here
+
                         products.add(p);
-                        MainActivity.DB.addProduct(p);
+
+                        long isAdded = MainActivity.DB.addProduct(p);
+
+                        Log.d(LOG_DATABASE_TAG, "Is Product ADDED TO ARRAY LIST: " + p.toString());
+                        Log.d(LOG_DATABASE_TAG, "Is Product ADDED TO DATABASE : " + isAdded);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

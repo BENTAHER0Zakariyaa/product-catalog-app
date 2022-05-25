@@ -21,7 +21,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     // Database Info
     private static final String DATABASE_NAME = "productCatalogApp";
-    private static final int DATABASE_VERSION= 2;
+    private static final int DATABASE_VERSION = 5;
 
     // Table Names
     private static final String TABLE_ = "";
@@ -130,8 +130,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean isUserExist(int id){
-        SQLiteDatabase db = this.getReadableDatabase();
-        long count = DatabaseUtils.queryNumEntries(db, TABLE_USERS);
+        String query = " SELECT * FROM " + TABLE_USERS + " WHERE " + KEY_USER_ID + " = " + String.valueOf(id);
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        long count = cursor.getCount();
         db.close();
         return count != 0;
     }
@@ -173,8 +175,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean isCategoryExist(int id){
-        SQLiteDatabase db = this.getReadableDatabase();
-        long count = DatabaseUtils.queryNumEntries(db, TABLE_CATEGORIES);
+        String query = " SELECT * FROM " + TABLE_CATEGORIES + " WHERE " + KEY_CATEGORY_ID + " = " + String.valueOf(id);
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        long count = cursor.getCount();
         db.close();
         return count != 0;
     }
@@ -196,7 +200,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public long addCategory(Category category){
+
         if (!isCategoryExist(category.getId())){
+
             SQLiteDatabase db = this.getReadableDatabase();
             ContentValues cv = new ContentValues();
             cv.put(KEY_CATEGORY_ID, category.getId());
@@ -204,44 +210,55 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             cv.put(KEY_CATEGORY_NAME, category.getName());
             long added = db.insert(TABLE_CATEGORIES, null, cv);
             db.close();
+
             return added;
         }
         return 0;
     }
 
     public boolean isProductExist(int id){
-        SQLiteDatabase db = this.getReadableDatabase();
-        long count = DatabaseUtils.queryNumEntries(db, TABLE_PRODUCTS);
+        String query = " SELECT * FROM " + TABLE_PRODUCTS + " WHERE " + KEY_PRODUCT_ID + " = " + String.valueOf(id);
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        long count = cursor.getCount();
         db.close();
         return count != 0;
     }
 
     public boolean isProductImageExist(int id){
-        SQLiteDatabase db = this.getReadableDatabase();
-        long count = DatabaseUtils.queryNumEntries(db, TABLE_PRODUCT_IMAGES);
+        String query = " SELECT * FROM " + TABLE_PRODUCT_IMAGES + " WHERE " + KEY_PRODUCT_IMAGES_ID + " = " + String.valueOf(id);
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        long count = cursor.getCount();
         db.close();
         return count != 0;
     }
 
-    public void addProduct(Product product) {
-        if (!isProductExist(product.getId())){
+    public long addProduct(Product product) {
+        long added = 0;
+        if (!this.isProductExist(product.getId())){
+
             SQLiteDatabase db = this.getReadableDatabase();
+
             ContentValues cv = new ContentValues();
+
             cv.put(KEY_PRODUCT_ID, product.getId());
             cv.put(KEY_PRODUCT_CATEGORY_ID, product.getCategory().getId());
             cv.put(KEY_PRODUCT_TITLE, product.getLabel());
             cv.put(KEY_PRODUCT_DESCRIPTION, product.getDescription());
             cv.put(KEY_PRODUCT_PRICE, product.getPrice());
-            db.insert(TABLE_PRODUCTS, null, cv);
+            added = db.insert(TABLE_PRODUCTS, null, cv);
             db.close();
 
             ArrayList<ProductImage> productImages = product.getImages();
             for (int j = 0; j < productImages.size(); j++) {
                 ProductImage image = productImages.get(j);
-                addProductImage(image);
+                this.addProductImage(image);
             }
 
+            return added;
         }
+        return added;
     }
 
     public ArrayList<Product> getProducts(){
@@ -251,7 +268,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
 
         Cursor cursorProducts = db.rawQuery(selectProductsQuery, null);
-        Log.d("COUNT", "getProducts: " + cursorProducts.getCount());
         if (cursorProducts.moveToFirst()){
             products = new ArrayList<Product>();
             do {
@@ -268,6 +284,25 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cursorProducts.close();
         db.close();
         return products;
+    }
+
+    public Product getProduct(int id){
+        Product product = null;
+        String selectProductsQuery = "SELECT * FROM " + TABLE_PRODUCTS +" WHERE " + KEY_PRODUCT_ID + " = " + String.valueOf(id) ;
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursorProducts = db.rawQuery(selectProductsQuery, null);
+        if (cursorProducts.moveToFirst()){
+            product = new Product();
+            product.setId(cursorProducts.getInt(0));
+            product.setCategory(getCategory(product.getId()));
+            product.setLabel(cursorProducts.getString(2));
+            product.setDescription(cursorProducts.getString(3));
+            product.setPrice(cursorProducts.getFloat(4));
+            product.setImages(getProductImage(product.getId()));
+        }
+        cursorProducts.close();
+        db.close();
+        return product;
     }
 
     public void addProductImage(ProductImage image) {

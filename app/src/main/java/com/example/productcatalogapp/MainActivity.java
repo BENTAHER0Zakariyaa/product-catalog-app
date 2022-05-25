@@ -173,12 +173,12 @@ public class MainActivity extends AppCompatActivity {
         this.editTextUserName = this.findViewById(R.id.idEditTextUserName);
         this.editTextPassword = this.findViewById(R.id.idEditTextPassword);
 
-        editTextUserName.setText(APIHelper.TEST_USER_NAME);
-        editTextPassword.setText(APIHelper.TEST_PASSWORD);
+        this.editTextUserName.setText(APIHelper.TEST_USER_NAME);
+        this.editTextPassword.setText(APIHelper.TEST_PASSWORD);
 
         this.checkBoxSaveSession = this.findViewById(R.id.idCheckBoxSaveSession);
         this.buttonLogin = this.findViewById(R.id.idButtonLogin);
-        buttonLogin.setEnabled(false);
+        this.buttonLogin.setEnabled(false);
 
         preferences = getSharedPreferences(APP_NAME, this.MODE_PRIVATE);
         boolean isSaved = preferences.getBoolean("isSaved", false);

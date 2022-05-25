@@ -67,4 +67,16 @@ public class ProductImage {
         this.path = path;
     }
 
+
+    @Override
+    public String toString() {
+        return "ProductImage{" +
+                "id=" + id +
+                ", productId=" + productId +
+                ", fileName='" + fileName + '\'' +
+                ", filePath='" + filePath + '\'' +
+                ", name='" + name + '\'' +
+                ", path='" + path + '\'' +
+                '}';
+    }
 }
