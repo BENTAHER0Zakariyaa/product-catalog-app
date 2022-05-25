@@ -1,6 +1,8 @@
 package com.example.productcatalogapp.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -86,6 +88,27 @@ public class MainGridViewAdapter extends RecyclerView.Adapter<MainGridViewAdapte
                     Intent intent = new Intent(itemView.getContext(), ProductDetailsActivity.class);
                     intent.putExtra("productId", products.get(getAdapterPosition()).getId());
                     itemView.getContext().startActivity(intent);
+                }
+            });
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(itemView.getContext());
+                    builder.setTitle("ADD TO CART")
+                            .setMessage("hello")
+                            .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            })
+                            .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            }).create().show();
+                    return false;
                 }
             });
         }

@@ -34,7 +34,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         int productId = bundle.getInt("productId");
 
-        Product product = MainActivity.DB.getProduct(productId);
+        Product product = LoadingActivity.DB.getProduct(productId);
 
         this.textViewPrice.setText(String.valueOf(product.getPrice()) + " DH");
         this.textViewDescription.setText(product.getDescription());

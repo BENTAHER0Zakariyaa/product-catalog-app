@@ -150,9 +150,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return user;
     }
 
-    public User getUser(int id){
+    public User getUser(int userId){
         User user = null;
-        String query = " SELECT * FROM " + TABLE_USERS + " WHERE " + KEY_USER_ID + " = " + id ;
+        String query = " SELECT * FROM " + TABLE_USERS + " WHERE " + KEY_USER_ID + " = " + userId ;
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {

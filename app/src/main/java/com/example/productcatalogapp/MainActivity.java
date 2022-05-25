@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -51,112 +52,31 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String APP_NAME = "com.example.productcatalogapp";
-    public static final int READ_STORAGE_PERMISSION_CODE = 1;
-    public static final int WRITE_STORAGE_PERMISSION_CODE = 2;
-
-
-    public static DataBaseHelper DB = null;
+    public static final int PERMISSIONS_CODE = 1;
 
     private EditText editTextUserName = null;
     private EditText editTextPassword = null;
     private CheckBox checkBoxSaveSession = null;
     private Button buttonLogin = null;
 
-    public static SharedPreferences preferences = null;
-    public static User currentUser = null;
 
 
     private View.OnClickListener buttonLoginOnClickListener = new View.OnClickListener() {
         public void onClick(View v) {
-            if (    ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MainActivity.READ_STORAGE_PERMISSION_CODE);
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MainActivity.WRITE_STORAGE_PERMISSION_CODE);
-                Toast.makeText(MainActivity.this, "Need Permission to access storage for Downloading Image", Toast.LENGTH_SHORT).show();
+            if (
+                    ContextCompat.checkSelfPermission(MainActivity.this, LoadingActivity.APP_PERMISSIONS[0]) != PackageManager.PERMISSION_GRANTED
+                &&
+                    ContextCompat.checkSelfPermission(MainActivity.this, LoadingActivity.APP_PERMISSIONS[1]) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(MainActivity.this, LoadingActivity.APP_PERMISSIONS, MainActivity.PERMISSIONS_CODE);
             } else {
                 buttonLogin.setEnabled(false);
-                currentUser = new User(editTextUserName.getText().toString(), editTextPassword.getText().toString());
-
-                boolean isConnected = isConnected();
-
-                currentUser.setConnected(isConnected);
-                if (isConnected) {
-                    if (currentUser.getUsername().equals("")) {
-                        Toast.makeText(MainActivity.this, R.string.main_activity_error_username_required, Toast.LENGTH_SHORT).show();
-                        buttonLogin.setEnabled(true);
-                    } else if (currentUser.getPassword().equals("")) {
-                        Toast.makeText(MainActivity.this, R.string.main_activity_error_password_required, Toast.LENGTH_SHORT).show();
-                        buttonLogin.setEnabled(true);
-                    } else {
-                        String URL = APIHelper.API_URL + "/login?login=" + currentUser.getUsername() + "&password=" + currentUser.getPassword();
-                        RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
-                        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, URL, null, new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-
-                                try {
-                                    currentUser.setToken(response.getJSONObject("success").getString("token"));
-
-                                    RequestQueue requestInfoQueue = Volley.newRequestQueue(MainActivity.this);
-                                    String URL = APIHelper.API_URL + "/users/login/" + currentUser.getUsername();
-
-                                    JsonObjectRequest requestInfo = new JsonObjectRequest(Request.Method.GET, URL, null, new Response.Listener<JSONObject>() {
-                                        @Override
-                                        public void onResponse(JSONObject response) {
-                                            try {
-                                                currentUser.setId(Integer.valueOf(response.getString("id")));
-                                                if (!DB.isUserExist(currentUser.getId())) {
-                                                    DB.addUser(currentUser);
-                                                }
-                                                Intent intent = new Intent(MainActivity.this, CatalogActivity.class);
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                                                startActivity(intent);
-                                                saveSession(currentUser.getId());
-                                                buttonLogin.setEnabled(true);
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                                buttonLogin.setEnabled(true);
-                                            }
-                                        }
-
-                                    }, null) {
-                                        @Override
-                                        public Map<String, String> getHeaders() throws AuthFailureError {
-                                            HashMap header = new HashMap();
-                                            header.put("DOLAPIKEY", currentUser.getToken());
-                                            return header;
-                                        }
-                                    };
-                                    requestInfoQueue.add(requestInfo);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                    buttonLogin.setEnabled(true);
-                                }
-                            }
-
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Toast.makeText(MainActivity.this, R.string.main_activity_error_invalid_fields, Toast.LENGTH_SHORT).show();
-                                buttonLogin.setEnabled(true);
-                            }
-                        });
-                        requestQueue.add(request);
-                    }
+                LoadingActivity.currentUser = new User(editTextUserName.getText().toString(), editTextPassword.getText().toString());
+                LoadingActivity.currentUser.setConnected(isConnected());
+                if (LoadingActivity.currentUser.getConnected()) {
+                    MainActivity.this.userConnected();
                 } else {
-                    currentUser = DB.getUser(currentUser.getUsername(), currentUser.getPassword());
-
-                    if (currentUser != null) {
-                        currentUser.setConnected(false);
-                        Intent intent = new Intent(MainActivity.this, CatalogActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                        startActivity(intent);
-                        saveSession(currentUser.getId());
-                        buttonLogin.setEnabled(true);
-                    } else
-                        Toast.makeText(MainActivity.this, R.string.main_activity_error_invalid_fields, Toast.LENGTH_SHORT).show();
-                    buttonLogin.setEnabled(true);
+                    MainActivity.this.userDeConnected();
                 }
             }
 
@@ -168,36 +88,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DB = new DataBaseHelper(this);
-
         this.editTextUserName = this.findViewById(R.id.idEditTextUserName);
         this.editTextPassword = this.findViewById(R.id.idEditTextPassword);
-
-        this.editTextUserName.setText(APIHelper.TEST_USER_NAME);
-        this.editTextPassword.setText(APIHelper.TEST_PASSWORD);
-
         this.checkBoxSaveSession = this.findViewById(R.id.idCheckBoxSaveSession);
         this.buttonLogin = this.findViewById(R.id.idButtonLogin);
-        this.buttonLogin.setEnabled(false);
 
-        preferences = getSharedPreferences(APP_NAME, this.MODE_PRIVATE);
-        boolean isSaved = preferences.getBoolean("isSaved", false);
-        if (isSaved) {
-            int id = preferences.getInt("id", -1);
-            if (id != -1) {
-                currentUser = DB.getUser(id);
-                if (currentUser != null) {
-                    currentUser.setConnected(isConnected());
-                    Intent intent = new Intent(MainActivity.this, CatalogActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                    startActivity(intent);
-                    saveSession(currentUser.getId());
-                    buttonLogin.setEnabled(true);
-                }
-            }
-        } else {
-            buttonLogin.setEnabled(true);
-        }
+        // remove
+        this.editTextUserName.setText(APIHelper.TEST_USER_NAME);
+        this.editTextPassword.setText(APIHelper.TEST_PASSWORD);
 
         this.buttonLogin.setOnClickListener(this.buttonLoginOnClickListener);
     }
@@ -214,14 +112,111 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void saveSession(int id) {
-        preferences.edit()
-                .putBoolean("isSaved", this.checkBoxSaveSession.isChecked())
-                .putInt("id", id)
-                .apply();
+    public boolean isHasPermissions(){
+        boolean isHas = true;
+        for (int i = 0; i < LoadingActivity.APP_PERMISSIONS.length; i++) {
+            isHas = isHas && ContextCompat.checkSelfPermission(MainActivity.this, LoadingActivity.APP_PERMISSIONS[i]) != PackageManager.PERMISSION_GRANTED;
+        }
+        return isHas;
     }
 
+    void userConnected(){
+        if (LoadingActivity.currentUser.getUsername().equals("")) {
+            Toast.makeText(MainActivity.this, R.string.main_activity_error_username_required, Toast.LENGTH_SHORT).show();
+            buttonLogin.setEnabled(true);
+        } else if (LoadingActivity.currentUser.getPassword().equals("")) {
+            Toast.makeText(MainActivity.this, R.string.main_activity_error_password_required, Toast.LENGTH_SHORT).show();
+            buttonLogin.setEnabled(true);
+        } else {
+            String loginURL = APIHelper.API_URL + "/login?login=" + LoadingActivity.currentUser.getUsername() + "&password=" + LoadingActivity.currentUser.getPassword();
 
+            RequestQueue loginRequestQueue = Volley.newRequestQueue(MainActivity.this);
+
+            JsonObjectRequest loginRequest = new JsonObjectRequest(Request.Method.GET, loginURL, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+
+                    try {
+                        LoadingActivity.currentUser.setToken(response.getJSONObject("success").getString("token"));
+
+                        RequestQueue requestInfoQueue = Volley.newRequestQueue(MainActivity.this);
+                        String userDataURL = APIHelper.API_URL + "/users/login/" + LoadingActivity.currentUser.getUsername();
+
+                        JsonObjectRequest userDataRequest = new JsonObjectRequest(Request.Method.GET, userDataURL, null, new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    LoadingActivity.currentUser.setId(Integer.valueOf(response.getString("id")));
+                                    if (!LoadingActivity.DB.isUserExist(LoadingActivity.currentUser.getId())) {
+                                        LoadingActivity.DB.addUser(LoadingActivity.currentUser);
+                                    }
+                                    MainActivity.this.startCatalogActivity();
+                                    MainActivity.this.saveSession(LoadingActivity.currentUser.getId());
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    MainActivity.this.buttonLogin.setEnabled(true);
+                                }
+                            }
+
+                        }, null) {
+                            @Override
+                            public Map<String, String> getHeaders() throws AuthFailureError {
+                                HashMap header = new HashMap();
+                                header.put("DOLAPIKEY", LoadingActivity.currentUser.getToken());
+                                return header;
+                            }
+                        };
+                        requestInfoQueue.add(userDataRequest);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        MainActivity.this.buttonLogin.setEnabled(true);
+                    }
+                }
+
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(MainActivity.this, R.string.main_activity_error_invalid_fields, Toast.LENGTH_SHORT).show();
+                    MainActivity.this.buttonLogin.setEnabled(true);
+                }
+            });
+            loginRequestQueue.add(loginRequest);
+        }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent=new Intent();
+        setResult(LoadingActivity.MAIN_ACTIVITY_START_CODE, intent);
+        this.finish();
+    }
+
+    void userDeConnected (){
+        LoadingActivity.currentUser = LoadingActivity.DB.getUser(LoadingActivity.currentUser.getUsername(), LoadingActivity.currentUser.getPassword());
+        if (LoadingActivity.currentUser != null) {
+            LoadingActivity.currentUser.setConnected(this.isConnected());
+            this.startCatalogActivity();
+            this.saveSession(LoadingActivity.currentUser.getId());
+        } else {
+            Toast.makeText(MainActivity.this, R.string.main_activity_error_invalid_fields, Toast.LENGTH_SHORT).show();
+            this.buttonLogin.setEnabled(true);
+        }
+    }
+
+    void startCatalogActivity(){
+        Intent startCatalogActivityIntent = new Intent(MainActivity.this, CatalogActivity.class);
+        startCatalogActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivityForResult(startCatalogActivityIntent, LoadingActivity.MAIN_ACTIVITY_START_CODE);
+    }
+
+    public void saveSession(int id) {
+        LoadingActivity
+                .preferences.edit()
+                .putBoolean("isSessionSaved", this.checkBoxSaveSession.isChecked())
+                .putInt("userId", id)
+                .apply();
+    }
 
 
 }

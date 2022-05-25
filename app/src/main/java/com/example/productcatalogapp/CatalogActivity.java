@@ -69,7 +69,7 @@ public class CatalogActivity extends AppCompatActivity {
     private View.OnClickListener buttonLogoutOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            MainActivity.preferences.edit().putBoolean("isSaved", false).putInt("id", -1).apply();
+            LoadingActivity.preferences.edit().putBoolean("isSessionSaved", false).putInt("userId", -1).apply();
             finish();
         }
     };
@@ -96,13 +96,17 @@ public class CatalogActivity extends AppCompatActivity {
         this.buttonUpdate.setOnClickListener(this.buttonUpdateOnClickListener);
 
         // IF OFFLINE DO
-        products = MainActivity.DB.getProducts();
+        products = LoadingActivity.DB.getProducts();
 
 
         fillGrid();
 
     }
 
+    @Override
+    public void onBackPressed() {
+
+    }
 
     public void fillGrid(){
         mainGridViewAdapter = new MainGridViewAdapter(this, products);
@@ -135,7 +139,7 @@ public class CatalogActivity extends AppCompatActivity {
 
                         categories.add(c);
 
-                        long isAdded = MainActivity.DB.addCategory(c);
+                        long isAdded = LoadingActivity.DB.addCategory(c);
 
                         Log.d(LOG_DATABASE_TAG, "Is Category ADDED TO ARRAY LIST: " + c.toString());
                         Log.d(LOG_DATABASE_TAG, "Is Category ADDED TO DATABASE : " + isAdded);
@@ -151,7 +155,7 @@ public class CatalogActivity extends AppCompatActivity {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap header = new HashMap();
-                header.put("DOLAPIKEY", MainActivity.currentUser.getToken());
+                header.put("DOLAPIKEY", LoadingActivity.currentUser.getToken());
                 return header;
             }
         };
@@ -199,13 +203,12 @@ public class CatalogActivity extends AppCompatActivity {
                             image.setProductId(p.getId());
 
                             p.addImage(image);
-
-                            DownloadImage(APIHelper.DOCUMENTS_PATH+image.getPath(), "/"+image.getFilePath(), "/"+image.getFileName());
+                            new DownloadsImage().execute(APIHelper.DOCUMENTS_PATH+image.getPath(), "/"+image.getFilePath(), "/"+image.getFileName());
                         }
 
                         products.add(p);
 
-                        long isAdded = MainActivity.DB.addProduct(p);
+                        long isAdded = LoadingActivity.DB.addProduct(p);
 
                         Log.d(LOG_DATABASE_TAG, "Is Product ADDED TO ARRAY LIST: " + p.toString());
                         Log.d(LOG_DATABASE_TAG, "Is Product ADDED TO DATABASE : " + isAdded);
@@ -221,7 +224,7 @@ public class CatalogActivity extends AppCompatActivity {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap header = new HashMap();
-                header.put("DOLAPIKEY", MainActivity.currentUser.getToken());
+                header.put("DOLAPIKEY", LoadingActivity.currentUser.getToken());
                 return header;
             }
         };
@@ -230,18 +233,6 @@ public class CatalogActivity extends AppCompatActivity {
 
 
 
-    void DownloadImage(String ImageUrl,String Dir,String ImageName) {
-
-        if (    ContextCompat.checkSelfPermission(CatalogActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(CatalogActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(CatalogActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MainActivity.READ_STORAGE_PERMISSION_CODE);
-                ActivityCompat.requestPermissions(CatalogActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MainActivity.WRITE_STORAGE_PERMISSION_CODE);
-//            showToast("Need Permission to access storage for Downloading Image");
-        } else {
-//            showToast("Downloading Image...");
-            new DownloadsImage().execute(ImageUrl, Dir, ImageName);
-        }
-    }
 
     class DownloadsImage extends AsyncTask<String, Void, Void> {
 

@@ -2,6 +2,7 @@
 
     <string name="app_name">Product Catalog App</string>
     <string name="main_activity_"></string>
+    <string name="main_activity_permission_message">Our application need Permission to access</string>
     <string name="main_activity_hint_username_input">Please Enter your user name</string>
     <string name="main_activity_hint_password_input">Please Enter your password</string>
     <string name="main_activity_text_save_session_checkbox">Save your session</string>
@@ -12,5 +13,7 @@
     <string name="main_activity_error_invalid_fields">Invalid fields</string>
     <string name="dashboard_activity_text_logout_button">LOGOUT</string>
     <string name="dashboard_activity_text_update_button">UPDATE</string>
+
+
 
 </resources>
