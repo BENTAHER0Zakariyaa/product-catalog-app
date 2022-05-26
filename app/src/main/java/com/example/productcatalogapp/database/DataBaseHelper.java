@@ -29,6 +29,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_PRODUCTS = "products";
     private static final String TABLE_CATEGORIES = "categories";
     private static final String TABLE_PRODUCT_IMAGES = "productImages";
+    private static final String TABLE_CLIENT = "client";
+    private static final String TABLE_COMMAND = "command";
+    private static final String TABLE_COMMAND_LINE = "commandLine";
+
 
     // User Table Columns
     private static final String KEY_USER_ = "";

@@ -30,6 +30,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.productcatalogapp.API.APIHelper;
 import com.example.productcatalogapp.adapters.MainGridViewAdapter;
+import com.example.productcatalogapp.classes.Cart;
 import com.example.productcatalogapp.classes.Category;
 import com.example.productcatalogapp.classes.Product;
 import com.example.productcatalogapp.classes.ProductImage;
@@ -60,8 +61,11 @@ public class CatalogActivity extends AppCompatActivity {
     private ArrayList<Category> categories = null;
     private ArrayList<Product> products = null;
 
+    public static Cart cart = new Cart();
+
     private Button buttonLogout = null;
     private Button buttonUpdate = null;
+    private static Button buttonCart = null;
     private RecyclerView recyclerViewProduct = null;
 
     MainGridViewAdapter mainGridViewAdapter = null;
@@ -78,7 +82,6 @@ public class CatalogActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             updateCategory("product");
-
         }
     };
 
@@ -90,16 +93,25 @@ public class CatalogActivity extends AppCompatActivity {
         // INIT VIEWS
         this.buttonLogout = this.findViewById(R.id.idButtonLogout);
         this.buttonUpdate = this.findViewById(R.id.idButtonUpdate);
+        this.buttonCart = this.findViewById(R.id.idButtonCart);
         this.recyclerViewProduct = this.findViewById(R.id.idRecyclerViewProducts);
         // SET EVENTS
         this.buttonLogout.setOnClickListener(this.buttonLogoutOnClickListener);
         this.buttonUpdate.setOnClickListener(this.buttonUpdateOnClickListener);
+        buttonCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CatalogActivity.this, CartActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // IF OFFLINE DO
         products = LoadingActivity.DB.getProducts();
 
-
         fillGrid();
+
+        this.buttonCart.setText(getString(R.string.dashboard_activity_button_cart, cart.getCount(), cart.getTotal()));
 
     }
 
@@ -109,7 +121,8 @@ public class CatalogActivity extends AppCompatActivity {
     }
 
     public void fillGrid(){
-        mainGridViewAdapter = new MainGridViewAdapter(this, products);
+
+        mainGridViewAdapter = new MainGridViewAdapter(this, products, cart, buttonCart);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false);
 
