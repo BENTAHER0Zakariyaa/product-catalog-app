@@ -47,6 +47,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,25 +57,33 @@ public class CatalogActivity extends AppCompatActivity {
     // TAGS
     private static final String LOG_DATABASE_TAG = "DATABASE";
 
-    private static final String CATALOG_ACTIVITY_IMAGES_FOLDER = "/images";
-
     private ArrayList<Category> categories = null;
     private ArrayList<Product> products = null;
 
-    public static Cart cart = new Cart();
-
     private Button buttonLogout = null;
     private Button buttonUpdate = null;
-    private static Button buttonCart = null;
     private RecyclerView recyclerViewProduct = null;
 
-    MainGridViewAdapter mainGridViewAdapter = null;
+    public static Button buttonCart = null;
+
+    private MainGridViewAdapter mainGridViewAdapter = null;
 
     private View.OnClickListener buttonLogoutOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             LoadingActivity.preferences.edit().putBoolean("isSessionSaved", false).putInt("userId", -1).apply();
+            Intent intent = new Intent();
+            setResult(LoadingActivity.CATALOG_ACTIVITY_START_CODE, intent);
+            LoadingActivity.cart.removeAll();
             finish();
+        }
+    };
+
+    private View.OnClickListener buttonCartOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(CatalogActivity.this, CartActivity.class);
+            startActivity(intent);
         }
     };
 
@@ -88,31 +97,26 @@ public class CatalogActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_catalog);
+        this.setContentView(R.layout.activity_catalog);
 
         // INIT VIEWS
         this.buttonLogout = this.findViewById(R.id.idButtonLogout);
         this.buttonUpdate = this.findViewById(R.id.idButtonUpdate);
         this.buttonCart = this.findViewById(R.id.idButtonCart);
         this.recyclerViewProduct = this.findViewById(R.id.idRecyclerViewProducts);
+
         // SET EVENTS
         this.buttonLogout.setOnClickListener(this.buttonLogoutOnClickListener);
         this.buttonUpdate.setOnClickListener(this.buttonUpdateOnClickListener);
-        buttonCart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(CatalogActivity.this, CartActivity.class);
-                startActivity(intent);
-            }
-        });
+
+        this.buttonCart.setOnClickListener(buttonCartOnClickListener);
 
         // IF OFFLINE DO
-        products = LoadingActivity.DB.getProducts();
+        this.products = LoadingActivity.DB.getProducts();
 
-        fillGrid();
+        this.fillGrid();
 
-        this.buttonCart.setText(getString(R.string.dashboard_activity_button_cart, cart.getCount(), cart.getTotal()));
-
+        this.buttonCart.setText(getString(R.string.dashboard_activity_button_cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
     }
 
     @Override
@@ -122,14 +126,13 @@ public class CatalogActivity extends AppCompatActivity {
 
     public void fillGrid(){
 
-        mainGridViewAdapter = new MainGridViewAdapter(this, products, cart, buttonCart);
+        this.mainGridViewAdapter = new MainGridViewAdapter(this, products);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false);
 
         this.recyclerViewProduct.setLayoutManager(gridLayoutManager);
         this.recyclerViewProduct.setAdapter(mainGridViewAdapter);
     }
-
 
     void updateCategory(String type){
         RequestQueue requestCategoriesQueue = Volley.newRequestQueue(CatalogActivity.this);
@@ -244,9 +247,6 @@ public class CatalogActivity extends AppCompatActivity {
         requestProductsQueue.add(requestProducts);
     }
 
-
-
-
     class DownloadsImage extends AsyncTask<String, Void, Void> {
 
         @Override
@@ -301,11 +301,6 @@ public class CatalogActivity extends AppCompatActivity {
 //            showToast("Image Saved!");
         }
     }
-
-    void showToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-    }
-
 
 }
 

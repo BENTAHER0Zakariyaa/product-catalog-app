@@ -59,8 +59,6 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox checkBoxSaveSession = null;
     private Button buttonLogin = null;
 
-
-
     private View.OnClickListener buttonLoginOnClickListener = new View.OnClickListener() {
         public void onClick(View v) {
             if (
@@ -69,17 +67,17 @@ public class MainActivity extends AppCompatActivity {
                     ContextCompat.checkSelfPermission(MainActivity.this, LoadingActivity.APP_PERMISSIONS[1]) != PackageManager.PERMISSION_GRANTED
             ) {
                 ActivityCompat.requestPermissions(MainActivity.this, LoadingActivity.APP_PERMISSIONS, MainActivity.PERMISSIONS_CODE);
-            } else {
-                buttonLogin.setEnabled(false);
-                LoadingActivity.currentUser = new User(editTextUserName.getText().toString(), editTextPassword.getText().toString());
-                LoadingActivity.currentUser.setConnected(isConnected());
+            }
+            else {
+                MainActivity.this.buttonLogin.setEnabled(false);
+                LoadingActivity.currentUser = new User(MainActivity.this.editTextUserName.getText().toString(), MainActivity.this.editTextPassword.getText().toString());
+                LoadingActivity.currentUser.setConnected(LoadingActivity.isConnected());
                 if (LoadingActivity.currentUser.getConnected()) {
                     MainActivity.this.userConnected();
                 } else {
                     MainActivity.this.userDeConnected();
                 }
             }
-
         }
     };
 
@@ -88,10 +86,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.editTextUserName = this.findViewById(R.id.idEditTextUserName);
-        this.editTextPassword = this.findViewById(R.id.idEditTextPassword);
-        this.checkBoxSaveSession = this.findViewById(R.id.idCheckBoxSaveSession);
-        this.buttonLogin = this.findViewById(R.id.idButtonLogin);
+        this.editTextUserName       = this.findViewById(R.id.idEditTextUserName);
+        this.editTextPassword       = this.findViewById(R.id.idEditTextPassword);
+        this.checkBoxSaveSession    = this.findViewById(R.id.idCheckBoxSaveSession);
+        this.buttonLogin            = this.findViewById(R.id.idButtonLogin);
 
         // remove
         this.editTextUserName.setText(APIHelper.TEST_USER_NAME);
@@ -100,34 +98,29 @@ public class MainActivity extends AppCompatActivity {
         this.buttonLogin.setOnClickListener(this.buttonLoginOnClickListener);
     }
 
-
-    public boolean isConnected() {
-        try {
-            String command = "ping -c 1 google.com";
-            return Runtime.getRuntime().exec(command).waitFor() == 0;
-        } catch (InterruptedException e) {
-            return false;
-        } catch (IOException e) {
-            return false;
-        }
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        setResult(LoadingActivity.MAIN_ACTIVITY_START_CODE, intent);
+        this.finish();
     }
 
-    public boolean isHasPermissions(){
-        boolean isHas = true;
-        for (int i = 0; i < LoadingActivity.APP_PERMISSIONS.length; i++) {
-            isHas = isHas && ContextCompat.checkSelfPermission(MainActivity.this, LoadingActivity.APP_PERMISSIONS[i]) != PackageManager.PERMISSION_GRANTED;
-        }
-        return isHas;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.buttonLogin.setEnabled(true);
     }
 
     void userConnected(){
         if (LoadingActivity.currentUser.getUsername().equals("")) {
             Toast.makeText(MainActivity.this, R.string.main_activity_error_username_required, Toast.LENGTH_SHORT).show();
-            buttonLogin.setEnabled(true);
-        } else if (LoadingActivity.currentUser.getPassword().equals("")) {
+            this.buttonLogin.setEnabled(true);
+        }
+        else if (LoadingActivity.currentUser.getPassword().equals("")) {
             Toast.makeText(MainActivity.this, R.string.main_activity_error_password_required, Toast.LENGTH_SHORT).show();
-            buttonLogin.setEnabled(true);
-        } else {
+            this.buttonLogin.setEnabled(true);
+        }
+        else {
             String loginURL = APIHelper.API_URL + "/login?login=" + LoadingActivity.currentUser.getUsername() + "&password=" + LoadingActivity.currentUser.getPassword();
 
             RequestQueue loginRequestQueue = Volley.newRequestQueue(MainActivity.this);
@@ -182,20 +175,12 @@ public class MainActivity extends AppCompatActivity {
             });
             loginRequestQueue.add(loginRequest);
         }
-
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent=new Intent();
-        setResult(LoadingActivity.MAIN_ACTIVITY_START_CODE, intent);
-        this.finish();
     }
 
     void userDeConnected (){
         LoadingActivity.currentUser = LoadingActivity.DB.getUser(LoadingActivity.currentUser.getUsername(), LoadingActivity.currentUser.getPassword());
         if (LoadingActivity.currentUser != null) {
-            LoadingActivity.currentUser.setConnected(this.isConnected());
+            LoadingActivity.currentUser.setConnected(LoadingActivity.isConnected());
             this.startCatalogActivity();
             this.saveSession(LoadingActivity.currentUser.getId());
         } else {
@@ -206,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
 
     void startCatalogActivity(){
         Intent startCatalogActivityIntent = new Intent(MainActivity.this, CatalogActivity.class);
-        startCatalogActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivityForResult(startCatalogActivityIntent, LoadingActivity.MAIN_ACTIVITY_START_CODE);
     }
 

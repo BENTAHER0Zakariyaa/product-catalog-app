@@ -12,12 +12,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.productcatalogapp.classes.Cart;
 import com.example.productcatalogapp.classes.User;
 import com.example.productcatalogapp.database.DataBaseHelper;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class LoadingActivity extends AppCompatActivity {
+
     public static final String APP_NAME = "com.example.productcatalogapp";
 
     public static final int MAIN_ACTIVITY_START_CODE = 1;
@@ -32,6 +35,8 @@ public class LoadingActivity extends AppCompatActivity {
     public static DataBaseHelper DB = null;
     public static SharedPreferences preferences = null;
     public static User currentUser = null;
+
+    public static Cart cart = new Cart();
 
     private Intent startActivityIntent = null;
 
@@ -48,23 +53,21 @@ public class LoadingActivity extends AppCompatActivity {
         int userId = this.preferences.getInt("userId", -1);
 
         if (isSessionSaved && userId != -1) {
-            this.currentUser = DB.getUser(userId);
-            if (currentUser != null) {
-                startActivityIntent = new Intent(LoadingActivity.this, CatalogActivity.class);
-                startActivityForResult(startActivityIntent, CATALOG_ACTIVITY_START_CODE);
+            this.currentUser = this.DB.getUser(userId);
+            if (this.currentUser != null) {
+                this.startActivityIntent = new Intent(LoadingActivity.this, CatalogActivity.class);
+                this.startActivityForResult(this.startActivityIntent, this.CATALOG_ACTIVITY_START_CODE);
             }
             else{
-                startActivityIntent = new Intent(LoadingActivity.this, MainActivity.class);
-                startActivityForResult(startActivityIntent, MAIN_ACTIVITY_START_CODE);
+                this.startActivityIntent = new Intent(LoadingActivity.this, MainActivity.class);
+                this.startActivityForResult(this.startActivityIntent, this.MAIN_ACTIVITY_START_CODE);
             }
         }
         else {
-            startActivityIntent = new Intent(LoadingActivity.this, MainActivity.class);
-            startActivityForResult(startActivityIntent, MAIN_ACTIVITY_START_CODE);
+            this.startActivityIntent = new Intent(LoadingActivity.this, MainActivity.class);
+            this.startActivityForResult(this.startActivityIntent, this.MAIN_ACTIVITY_START_CODE);
         }
-
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -74,10 +77,20 @@ public class LoadingActivity extends AppCompatActivity {
                 this.finish();
             break;
             case CATALOG_ACTIVITY_START_CODE:
-                Log.d("TAG", "onActivityResult: ayah kandoz");
-                startActivityIntent = new Intent(LoadingActivity.this, MainActivity.class);
-                startActivityForResult(startActivityIntent, MAIN_ACTIVITY_START_CODE);
+                this.startActivityIntent = new Intent(LoadingActivity.this, MainActivity.class);
+                this.startActivityForResult(this.startActivityIntent, this.MAIN_ACTIVITY_START_CODE);
             break;
+        }
+    }
+
+    public static boolean isConnected() {
+        try {
+            String command = "ping -c 1 google.com";
+            return Runtime.getRuntime().exec(command).waitFor() == 0;
+        } catch (InterruptedException e) {
+            return false;
+        } catch (IOException e) {
+            return false;
         }
     }
 }

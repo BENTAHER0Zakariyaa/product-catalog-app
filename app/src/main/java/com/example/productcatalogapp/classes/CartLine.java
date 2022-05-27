@@ -32,4 +32,12 @@ public class CartLine {
         return quantity * product.getPrice();
     }
 
+
+    public void IncrementQuantity(){
+        this.quantity++;
+    }
+    public void DecrementQuantity(){
+        this.quantity--;
+    }
+
 }

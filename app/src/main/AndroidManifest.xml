@@ -36,9 +36,6 @@
             android:exported="false"
             android:screenOrientation="landscape" />
         <activity
-            android:name=".ItemMainGrid"
-            android:exported="false" />
-        <activity
             android:name=".CatalogActivity"
             android:exported="false"
             android:screenOrientation="landscape" />

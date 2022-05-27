@@ -26,7 +26,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private TextView textViewLabel = null;
     private TextView textViewPrice = null;
     private TextView textViewDescription = null;
-
     private RecyclerView recyclerViewProductImages = null;
 
     @Override
@@ -34,10 +33,10 @@ public class ProductDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_details);
 
-        this.textViewDescription = this.findViewById(R.id.idTextViewDescription);
-        this.textViewLabel = this.findViewById(R.id.idTextViewLabel);
-        this.textViewPrice = this.findViewById(R.id.idTextViewPrice);
-        this.recyclerViewProductImages = this.findViewById(R.id.idRecyclerViewProductImages);
+        this.textViewDescription        = this.findViewById(R.id.idTextViewDescription);
+        this.textViewLabel              = this.findViewById(R.id.idTextViewLabel);
+        this.textViewPrice              = this.findViewById(R.id.idTextViewPrice);
+        this.recyclerViewProductImages  = this.findViewById(R.id.idRecyclerViewProductImages);
 
         Bundle bundle = getIntent().getExtras();
         int productId = bundle.getInt("productId");
@@ -49,15 +48,12 @@ public class ProductDetailsActivity extends AppCompatActivity {
         this.textViewLabel.setText(product.getLabel());
 
         if (product.getImages() !=  null){
-
             ListProductImagesAdapter listProductImagesAdapter = new ListProductImagesAdapter(this, product.getImages());
-
             GridLayoutManager listProductImagesLayoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
 
             this.recyclerViewProductImages.setLayoutManager(listProductImagesLayoutManager);
             this.recyclerViewProductImages.setAdapter(listProductImagesAdapter);
             SnapHelper snapHelper = new LinearSnapHelper();
-
             snapHelper.attachToRecyclerView(recyclerViewProductImages);
         }
     }

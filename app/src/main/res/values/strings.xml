@@ -23,6 +23,7 @@
     <string name="dashboard_activity_button_cart">Cart (%1$d, %2$.2f Dh)</string>
     <string name="action_back">Back</string>
     <string name="action_valid">Valid</string>
+    <string name="action_delete">Delete</string>
 
 
 </resources>

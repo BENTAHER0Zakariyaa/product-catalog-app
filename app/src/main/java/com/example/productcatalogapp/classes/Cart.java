@@ -19,11 +19,8 @@ public class Cart {
         }
     }
 
-    public void removeCartLine(Integer productId){
-        Integer position = isCardLineExist(productId);
-        if (position != -1){
-            isCardLineExist(productId);
-        }
+    public void removeCartLine(CartLine cartLine){
+        this.cartLines.remove(cartLine);
     }
 
     public CartLine getCartLine(Integer lineId){
@@ -49,7 +46,12 @@ public class Cart {
         return total;
     }
 
+
     public int getCount() {
         return this.cartLines.size();
+    }
+
+    public void removeAll() {
+        this.cartLines = new ArrayList<CartLine>();
     }
 }

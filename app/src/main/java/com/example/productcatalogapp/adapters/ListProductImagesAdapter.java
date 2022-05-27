@@ -20,10 +20,9 @@ import java.util.ArrayList;
 
 public class ListProductImagesAdapter extends RecyclerView.Adapter<ListProductImagesAdapter.ViewHolder> {
 
-    ArrayList<ProductImage> images;
-    LayoutInflater inflater;
-    Context context;
-
+    private ArrayList<ProductImage> images;
+    private LayoutInflater inflater;
+    private Context context;
 
     public ListProductImagesAdapter(Context ctx, ArrayList<ProductImage> images){
         this.images = images;
@@ -40,7 +39,6 @@ public class ListProductImagesAdapter extends RecyclerView.Adapter<ListProductIm
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-
         if (images != null){
             ProductImage image = images.get(i);
             File imgFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES + "/ProductCatalogApp/" + image.getPath());
@@ -53,16 +51,13 @@ public class ListProductImagesAdapter extends RecyclerView.Adapter<ListProductIm
 
     @Override
     public int getItemCount() {
-        int count = 0;
-        if (this.images != null) {
-            count = this.images.size();
-        }
-        return count;
+        return this.images != null ? this.images.size() : 0 ;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView imageViewProduct;
+        private ImageView imageViewProduct;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.imageViewProduct = itemView.findViewById(R.id.idImageViewProduct);

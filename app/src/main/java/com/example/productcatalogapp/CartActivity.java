@@ -3,21 +3,50 @@ package com.example.productcatalogapp;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.Button;
+
+import com.example.productcatalogapp.adapters.RecyclerViewCartAdapter;
 
 public class CartActivity extends AppCompatActivity {
 
-    TextView idTest;
+
+    private RecyclerView recyclerViewCardProducts = null;
+    private Button buttonBack = null;
+
+    private View.OnClickListener onClickListenerButtonBack = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            finish();
+        }
+    };
+
+    public static RecyclerViewCartAdapter recyclerViewCartAdapter = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
+        this.recyclerViewCardProducts = this.findViewById(R.id.idRecyclerViewCardProducts);
+        this.buttonBack = this.findViewById(R.id.idButtonBack);
+        this.buttonBack.setOnClickListener(onClickListenerButtonBack);
+    }
 
-        idTest = findViewById(R.id.idTest);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        recyclerViewCartAdapter = new RecyclerViewCartAdapter(this);
 
-        for (int i = 0; i < CatalogActivity.cart.getCount(); i++) {
-            idTest.setText(idTest.getText()+ CatalogActivity.cart.getCartLine(i).getProduct().toString() + "\n");
-        }
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false);
+
+        recyclerViewCardProducts.setLayoutManager(gridLayoutManager);
+        recyclerViewCardProducts.setAdapter(recyclerViewCartAdapter);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }
