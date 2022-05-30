@@ -32,6 +32,12 @@
             >
 
             <Button
+                android:id="@+id/idButtonUpdateCommands"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:text="@string/dashboard_activity_text_sync_commands_button" />
+            <Button
                 android:id="@+id/idButtonUpdate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

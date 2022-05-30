@@ -31,10 +31,10 @@
             android:orientation="horizontal"
             >
             <Button
-                android:id="@+id/idButtonValid"
+                android:id="@+id/idButtonCreateCommand"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/action_valid" />
+                android:text="@string/action_create_command" />
         </LinearLayout>
     </LinearLayout>
     <android.support.v7.widget.RecyclerView

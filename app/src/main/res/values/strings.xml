@@ -11,19 +11,34 @@
     <string name="main_activity_error_username_required">User name is required</string>
     <string name="main_activity_error_password_required">Password is required</string>
     <string name="main_activity_error_invalid_fields">Invalid fields</string>
+
     <string name="dashboard_activity_text_logout_button">LOGOUT</string>
     <string name="dashboard_activity_text_update_button">UPDATE</string>
+    <string name="dashboard_activity_button_cart">Cart (%1$d, %2$.2f Dh)</string>
+    <string name="dashboard_activity_you_are_not_connected">You are not connected</string>
 
     <string name="dialog_add_to_cart">ADD TO CART</string>
     <string name="dialog_add_to_cart_set_quantity">Set quantity :</string>
 
-
     <string name="action_add">Add</string>
     <string name="action_cancel">Cancel</string>
-    <string name="dashboard_activity_button_cart">Cart (%1$d, %2$.2f Dh)</string>
+
     <string name="action_back">Back</string>
     <string name="action_valid">Valid</string>
     <string name="action_delete">Delete</string>
+    <string name="action_create_command">Create command</string>
 
+    <string name="dialog_client_info_hint_full_name">Enter client full name</string>
+    <string name="dialog_client_info_hint_address">Enter client address</string>
+    <string name="dialog_client_info_hint_main_phone_number">Enter client main phone number</string>
+    <string name="dialog_client_info_hint_second_phone_number">Enter client second phone number</string>
+    <string name="dialog_client_info_hint_more_info">More info</string>
+    <string name="dialog_client_info_button_create_command">create command</string>
+    <string name="dialog_client_info_hint_city">Enter client city</string>
+    <string name="cart_acticity_fullname_required">Client full name required</string>
+    <string name="cart_acticity_city_required">Client city required</string>
+    <string name="cart_acticity_address_required">Client address required</string>
+    <string name="cart_acticity_main_phone_required">Client main phone number required</string>
+    <string name="dashboard_activity_text_sync_commands_button">sync commands</string>
 
 </resources>

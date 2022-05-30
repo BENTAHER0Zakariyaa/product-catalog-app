@@ -11,6 +11,9 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.productcatalogapp.classes.Category;
+import com.example.productcatalogapp.classes.Client;
+import com.example.productcatalogapp.classes.Command;
+import com.example.productcatalogapp.classes.CommandLine;
 import com.example.productcatalogapp.classes.Product;
 import com.example.productcatalogapp.classes.ProductImage;
 import com.example.productcatalogapp.classes.User;
@@ -21,7 +24,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     // Database Info
     private static final String DATABASE_NAME = "productCatalogApp";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 8;
 
     // Table Names
     private static final String TABLE_ = "";
@@ -29,9 +32,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_PRODUCTS = "products";
     private static final String TABLE_CATEGORIES = "categories";
     private static final String TABLE_PRODUCT_IMAGES = "productImages";
-    private static final String TABLE_CLIENT = "client";
-    private static final String TABLE_COMMAND = "command";
-    private static final String TABLE_COMMAND_LINE = "commandLine";
+    private static final String TABLE_CLIENTS = "clients";
+    private static final String TABLE_COMMANDS = "commands";
+    private static final String TABLE_COMMAND_LINES = "commandLines";
 
 
     // User Table Columns
@@ -64,6 +67,32 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String KEY_PRODUCT_IMAGES_DIR = "dir";
     private static final String KEY_PRODUCT_IMAGES_FILE_NAME = "fileName";
 
+
+    // Clients Table Columns
+    private static final String KEY_CLIENT_ = "";
+    private static final String KEY_CLIENT_ID = "id";
+    private static final String KEY_CLIENT_FULL_NAME = "fullName";
+    private static final String KEY_CLIENT_CITY = "city";
+    private static final String KEY_CLIENT_ADDRESS = "address";
+    private static final String KEY_CLIENT_MAIN_PHONE_NUMBER = "mainPhoneNumber";
+    private static final String KEY_CLIENT_SECOND_PHONE_NUMBER = "secondPhoneNumber";
+    private static final String KEY_CLIENT_MORE_INFORMATION = "moreInformation";
+
+    // Command Table Columns
+    private static final String KEY_COMMAND_ = "";
+    private static final String KEY_COMMAND_ID = "id";
+    private static final String KEY_COMMAND_CLIENT_ID = "clientId";
+    private static final String KEY_COMMAND_TOTAL = "total";
+    private static final String KEY_COMMAND_IS_SYNC = "isSync";
+
+    // Command line Table Columns
+    private static final String KEY_COMMAND_LINES_ = "";
+    private static final String KEY_COMMAND_LINES_ID = "id";
+    private static final String KEY_COMMAND_LINES_COMMAND_ID = "commandId";
+    private static final String KEY_COMMAND_LINES_PRODUCT_ID = "productId";
+    private static final String KEY_COMMAND_LINES_QUANTITY = "quantity";
+
+
     public DataBaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -72,7 +101,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase database) {
 
-        String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_USERS +
+        String CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_USERS +
                 "(" +
                 KEY_USER_ID + " INTEGER PRIMARY KEY NOT NULL," +
                 KEY_USER_NAME + " TEXT NOT NULL," +
@@ -81,14 +110,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 KEY_USER_TOKEN + " TEXT NOT NULL" +
                 ")";
 
-        String CREATE_CATEGORIES_TABLE = "CREATE TABLE " + TABLE_CATEGORIES +
+        String CREATE_CATEGORIES_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_CATEGORIES +
                 "(" +
                 KEY_CATEGORY_ID + " INTEGER PRIMARY KEY NOT NULL," +
                 KEY_CATEGORY_ID_PARENT_ID + " INTEGER NOT NULL," +
                 KEY_CATEGORY_NAME + " TEXT NOT NULL" +
                 ")";
 
-        String CREATE_PRODUCTS_TABLE = "CREATE TABLE " + TABLE_PRODUCTS +
+        String CREATE_PRODUCTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_PRODUCTS +
                 "(" +
                 KEY_PRODUCT_ID + " INTEGER PRIMARY KEY NOT NULL," +
                 KEY_PRODUCT_CATEGORY_ID + " INTEGER NOT NULL," +
@@ -98,7 +127,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 "FOREIGN KEY(" + KEY_PRODUCT_CATEGORY_ID + ") REFERENCES " + TABLE_CATEGORIES + "(" + KEY_CATEGORY_ID + ")" +
                 ")";
 
-        String CREATE_PRODUCT_IMAGES_TABLE = "CREATE TABLE " + TABLE_PRODUCT_IMAGES +
+        String CREATE_PRODUCT_IMAGES_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_PRODUCT_IMAGES +
                 "(" +
                 KEY_PRODUCT_IMAGES_ID + " INTEGER PRIMARY KEY NOT NULL," +
                 KEY_PRODUCT_IMAGES_PRODUCT_ID + " INTEGER NOT NULL," +
@@ -108,11 +137,46 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 "FOREIGN KEY(" + KEY_PRODUCT_IMAGES_PRODUCT_ID + ") REFERENCES " + TABLE_PRODUCTS + "(" + KEY_PRODUCT_ID + ")" +
                 ")";
 
+        String CREATE_CLIENT_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_CLIENTS +
+                "(" +
+                KEY_CLIENT_ID+ " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                KEY_CLIENT_FULL_NAME + " TEXT NOT NULL," +
+                KEY_CLIENT_CITY + " TEXT NOT NULL," +
+                KEY_CLIENT_ADDRESS + " TEXT NOT NULL," +
+                KEY_CLIENT_MAIN_PHONE_NUMBER + " TEXT NOT NULL," +
+                KEY_CLIENT_SECOND_PHONE_NUMBER + " TEXT," +
+                KEY_CLIENT_MORE_INFORMATION + " TEXT" +
+                ")";
+
+        String CREATE_COMMAND_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_COMMANDS +
+                "(" +
+                KEY_COMMAND_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                KEY_COMMAND_CLIENT_ID + " INTEGER NOT NULL," +
+                KEY_COMMAND_TOTAL + " REAL DEFAULT 0," +
+                KEY_COMMAND_IS_SYNC + " INTEGER DEFAULT 0," +
+                "FOREIGN KEY(" + KEY_COMMAND_CLIENT_ID + ") REFERENCES " + TABLE_CLIENTS + "(" + KEY_CLIENT_ID + ")" +
+                ")";
+
+        String CREATE_COMMAND_LINE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_COMMAND_LINES +
+                "(" +
+                KEY_COMMAND_LINES_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                KEY_COMMAND_LINES_COMMAND_ID + " INTEGER NOT NULL," +
+                KEY_COMMAND_LINES_PRODUCT_ID + " INTEGER NOT NULL," +
+                KEY_COMMAND_LINES_QUANTITY + " INTEGER NOT NULL," +
+                "FOREIGN KEY(" + KEY_COMMAND_LINES_COMMAND_ID + ") REFERENCES " + TABLE_COMMANDS + "(" + KEY_COMMAND_ID + ")," +
+                "FOREIGN KEY(" + KEY_COMMAND_LINES_PRODUCT_ID + ") REFERENCES " + TABLE_PRODUCTS + "(" + KEY_PRODUCT_ID + ")" +
+                ")";
+
+
+
         // Execute queries
         database.execSQL(CREATE_USERS_TABLE);
         database.execSQL(CREATE_CATEGORIES_TABLE);
         database.execSQL(CREATE_PRODUCTS_TABLE);
         database.execSQL(CREATE_PRODUCT_IMAGES_TABLE);
+        database.execSQL(CREATE_CLIENT_TABLE);
+        database.execSQL(CREATE_COMMAND_TABLE);
+        database.execSQL(CREATE_COMMAND_LINE_TABLE);
     }
 
     @Override
@@ -123,11 +187,17 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             String DROP_PRODUCT_IMAGES_TABLE = "DROP TABLE " + TABLE_PRODUCT_IMAGES;
             String DROP_PRODUCTS_TABLE = "DROP TABLE " + TABLE_PRODUCTS;
             String DROP_CATEGORIES_TABLE = "DROP TABLE " + TABLE_CATEGORIES;
+            String DROP_COMMAND_LINES_TABLE = "DROP TABLE " + TABLE_COMMAND_LINES;
+            String DROP_COMMANDS_TABLE = "DROP TABLE " + TABLE_COMMANDS;
+            String DROP_CLIENT_TABLE = "DROP TABLE " + TABLE_CLIENTS;
 
             database.execSQL(DROP_USERS_TABLE);
             database.execSQL(DROP_PRODUCT_IMAGES_TABLE);
             database.execSQL(DROP_PRODUCTS_TABLE);
             database.execSQL(DROP_CATEGORIES_TABLE);
+            database.execSQL(DROP_COMMAND_LINES_TABLE);
+            database.execSQL(DROP_COMMANDS_TABLE);
+            database.execSQL(DROP_CLIENT_TABLE);
 
             onCreate(database);
         }
@@ -345,6 +415,129 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.close();
         return images;
     }
+
+    public int isClientExist(String phoneNumber){
+        int id = -1;
+        String query = " SELECT * FROM " + TABLE_CLIENTS + " WHERE " + KEY_CLIENT_MAIN_PHONE_NUMBER + " = " + phoneNumber;
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst())
+        {
+            id = cursor.getInt(0);
+        }
+        db.close();
+        return id;
+    }
+
+    public Client getClient(int clientId){
+        Client client = null;
+        String selectClientQuery = " SELECT * FROM " + TABLE_CLIENTS + " WHERE " + KEY_CLIENT_ID + " = " + String.valueOf(clientId);
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor selectClientCursor = db.rawQuery(selectClientQuery, null);
+        if (selectClientCursor.moveToFirst())
+        {
+            client = new Client();
+            client.setId(selectClientCursor.getInt(0));
+            client.setFullName(selectClientCursor.getString(1));
+            client.setCity(selectClientCursor.getString(2));
+            client.setAddress(selectClientCursor.getString(3));
+            client.setMainPhoneNumber(selectClientCursor.getString(4));
+            client.setSecondPhoneNumber(selectClientCursor.getString(5));
+            client.setMoreInformation(selectClientCursor.getString(6));
+
+        }
+        db.close();
+        return client;
+    }
+
+    public int addClient(Client client){
+        int clientId = isClientExist(client.getMainPhoneNumber());
+        if (clientId == -1){
+            SQLiteDatabase db = this.getReadableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put(KEY_CLIENT_ID, client.getId());
+            cv.put(KEY_CLIENT_FULL_NAME, client.getFullName());
+            cv.put(KEY_CLIENT_ADDRESS, client.getAddress());
+            cv.put(KEY_CLIENT_CITY, client.getCity());
+            cv.put(KEY_CLIENT_MAIN_PHONE_NUMBER, client.getMainPhoneNumber());
+            cv.put(KEY_CLIENT_SECOND_PHONE_NUMBER, client.getSecondPhoneNumber());
+            cv.put(KEY_CLIENT_MORE_INFORMATION, client.getMoreInformation());
+            clientId = (int)db.insert(TABLE_CLIENTS, null, cv);
+            db.close();
+            return clientId;
+        }
+        return clientId;
+    }
+
+    public long addCommandLine(CommandLine commandLine){
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(KEY_COMMAND_LINES_COMMAND_ID, commandLine.getCommand().getId());
+        cv.put(KEY_COMMAND_LINES_PRODUCT_ID, commandLine.getProduct().getId());
+        cv.put(KEY_COMMAND_LINES_QUANTITY, commandLine.getQuantity());
+        long added = db.insert(TABLE_COMMAND_LINES, null, cv);
+        db.close();
+        return added;
+    }
+
+    public ArrayList<CommandLine> getCommandLines(int commandId){
+        ArrayList<CommandLine> commandLines = null;
+        String selectCommandLinesQuery = " SELECT * FROM " + TABLE_COMMAND_LINES + " WHERE " + KEY_COMMAND_LINES_COMMAND_ID + " = " + String.valueOf(commandId);
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor selectCommandLinesCursor = db.rawQuery(selectCommandLinesQuery, null);
+        if (selectCommandLinesCursor.moveToFirst())
+        {
+            commandLines = new ArrayList<CommandLine>();
+            CommandLine commandLine = null;
+            do {
+                commandLine = new CommandLine();
+                commandLine.setId(selectCommandLinesCursor.getInt(0));
+                commandLine.setProduct(getProduct(selectCommandLinesCursor.getInt(2)));
+                commandLine.setQuantity(selectCommandLinesCursor.getInt(3));
+                commandLines.add(commandLine);
+            } while (selectCommandLinesCursor.moveToNext());
+        }
+        db.close();
+        return commandLines;
+    }
+
+    public long addCommand(Command command){
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(KEY_COMMAND_CLIENT_ID, command.getClient().getId());
+        cv.put(KEY_COMMAND_TOTAL, command.getTotal());
+        long added = db.insert(TABLE_COMMANDS, null, cv);
+        db.close();
+        command.setId(Integer.valueOf((int)added));
+        for (int i = 0; i < command.commandLines.size(); i++) {
+            addCommandLine(command.commandLines.get(i));
+        }
+        return added;
+    }
+
+    public ArrayList<Command> getCommands(){
+        ArrayList<Command> commands = null;
+        String selectCommandsQuery = "SELECT * FROM " + TABLE_COMMANDS ;
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursorCommands = db.rawQuery(selectCommandsQuery, null);
+        if (cursorCommands.moveToFirst()){
+            commands = new ArrayList<Command>();
+            Command command = null;
+            do {
+                command = new Command();
+                command.setId(cursorCommands.getInt(0));
+                command.setClient(getClient(cursorCommands.getInt(1)));
+                command.setTotal(cursorCommands.getFloat(2));
+                command.setSync(cursorCommands.getInt(3) != 0);
+                command.commandLines = getCommandLines(command.getId());
+                commands.add(command);
+            } while (cursorCommands.moveToNext());
+        }
+        cursorCommands.close();
+        db.close();
+        return commands;
+    }
+
 
 
 }

@@ -54,4 +54,27 @@ public class Cart {
     public void removeAll() {
         this.cartLines = new ArrayList<CartLine>();
     }
+
+    public void init(){
+        this.cartLines = new ArrayList<CartLine>();
+    }
+
+    public Command createCommand(Client client){
+
+        Command command = new Command();
+
+        command.setClient(client);
+        command.setTotal(this.getTotal());
+
+        for (int i = 0; i < this.cartLines.size(); i++) {
+            CommandLine commandLine = new CommandLine();
+            commandLine.setProduct(this.cartLines.get(i).getProduct());
+            commandLine.setQuantity(this.cartLines.get(i).getQuantity());
+            commandLine.setCommand(command);
+            command.commandLines.add(commandLine);
+        }
+        this.init();
+        return command;
+
+    }
 }

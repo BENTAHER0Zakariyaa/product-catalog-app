@@ -34,6 +34,8 @@ import com.example.productcatalogapp.classes.Cart;
 import com.example.productcatalogapp.classes.Category;
 import com.example.productcatalogapp.classes.Product;
 import com.example.productcatalogapp.classes.ProductImage;
+import com.example.productcatalogapp.database.DataBaseHelper;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,6 +64,7 @@ public class CatalogActivity extends AppCompatActivity {
 
     private Button buttonLogout = null;
     private Button buttonUpdate = null;
+    private Button buttonUpdateCommands = null;
     private RecyclerView recyclerViewProduct = null;
 
     public static Button buttonCart = null;
@@ -86,11 +89,26 @@ public class CatalogActivity extends AppCompatActivity {
             startActivity(intent);
         }
     };
+    private View.OnClickListener buttonUpdateCommandsOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Gson gson = new Gson();
+            String json = gson.toJson(LoadingActivity.DB.getCommands());
+            Log.d("json", json);
+            Toast.makeText(CatalogActivity.this, json, Toast.LENGTH_SHORT).show();
+
+        }
+    };
 
     private View.OnClickListener buttonUpdateOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            updateCategory("product");
+            if(LoadingActivity.isConnected()) {
+                updateCategory("product");
+            }
+            else {
+                Toast.makeText(CatalogActivity.this, R.string.dashboard_activity_you_are_not_connected, Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
@@ -102,14 +120,19 @@ public class CatalogActivity extends AppCompatActivity {
         // INIT VIEWS
         this.buttonLogout = this.findViewById(R.id.idButtonLogout);
         this.buttonUpdate = this.findViewById(R.id.idButtonUpdate);
+        this.buttonUpdateCommands = this.findViewById(R.id.idButtonUpdateCommands);
         this.buttonCart = this.findViewById(R.id.idButtonCart);
+
+
         this.recyclerViewProduct = this.findViewById(R.id.idRecyclerViewProducts);
 
         // SET EVENTS
         this.buttonLogout.setOnClickListener(this.buttonLogoutOnClickListener);
         this.buttonUpdate.setOnClickListener(this.buttonUpdateOnClickListener);
 
+        this.buttonUpdateCommands.setOnClickListener(this.buttonUpdateCommandsOnClickListener);
         this.buttonCart.setOnClickListener(buttonCartOnClickListener);
+
 
         // IF OFFLINE DO
         this.products = LoadingActivity.DB.getProducts();
