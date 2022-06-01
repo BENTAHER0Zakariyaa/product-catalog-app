@@ -10,42 +10,66 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="16dp">
-            <EditText
-                android:id="@+id/idEditTextFullName"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/dialog_client_info_hint_full_name"
-                android:layout_marginBottom="8dp"/>
-            <EditText
-                android:id="@+id/idEditTextCity"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+                <EditText
+                    android:id="@+id/idEditTextName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/dialog_client_info_hint_name"
+                    android:layout_marginRight="16dp"/>
+                <EditText
+                    android:id="@+id/idEditTextTown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/dialog_client_info_hint_town" />
+            </LinearLayout>
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:orientation="vertical"
+               android:layout_marginBottom="16dp">
+               <EditText
+                   android:id="@+id/idEditTextAddress"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:hint="@string/dialog_client_info_hint_address"
+                   android:layout_marginBottom="16dp"/>
+               <EditText
+                   android:id="@+id/idEditTextEmail"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:inputType="textEmailAddress"
+                   android:hint="@string/dialog_client_info_hint_email"/>
+           </LinearLayout>
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/dialog_client_info_hint_city"
-                android:layout_marginBottom="8dp"/>
-            <EditText
-                android:id="@+id/idEditTextAddress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/dialog_client_info_hint_address"
-                android:layout_marginBottom="8dp"/>
-            <EditText
-                android:id="@+id/idEditTextMainPhoneNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/dialog_client_info_hint_main_phone_number"
-                android:layout_marginBottom="8dp"/>
-            <EditText
-                android:id="@+id/idEditTextSecondPhoneNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/dialog_client_info_hint_second_phone_number"
-                android:layout_marginBottom="8dp"/>
-            <EditText
-                android:id="@+id/idEditTextMoreInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/dialog_client_info_hint_more_info"
-                android:layout_marginBottom="8dp"/>
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+                <EditText
+                    android:id="@+id/idEditTextMainPhoneNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="phone"
+                    android:hint="@string/dialog_client_info_hint_main_phone_number"
+                    android:layout_marginBottom="8dp"/>
+                <EditText
+                    android:id="@+id/idEditTextSecondPhoneNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="phone"
+                    android:hint="@string/dialog_client_info_hint_second_phone_number"
+                    android:layout_marginBottom="8dp"/>
+            </LinearLayout>
             <Button
                 android:id="@+id/idButtonCreateCommand"
                 android:layout_width="match_parent"

@@ -24,7 +24,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     // Database Info
     private static final String DATABASE_NAME = "productCatalogApp";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 13;
 
     // Table Names
     private static final String TABLE_ = "";
@@ -71,12 +71,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     // Clients Table Columns
     private static final String KEY_CLIENT_ = "";
     private static final String KEY_CLIENT_ID = "id";
-    private static final String KEY_CLIENT_FULL_NAME = "fullName";
-    private static final String KEY_CLIENT_CITY = "city";
+    private static final String KEY_CLIENT_NAME = "name";
+    private static final String KEY_CLIENT_EMAIL = "email";
+    private static final String KEY_CLIENT_TOWN = "town";
     private static final String KEY_CLIENT_ADDRESS = "address";
     private static final String KEY_CLIENT_MAIN_PHONE_NUMBER = "mainPhoneNumber";
     private static final String KEY_CLIENT_SECOND_PHONE_NUMBER = "secondPhoneNumber";
-    private static final String KEY_CLIENT_MORE_INFORMATION = "moreInformation";
 
     // Command Table Columns
     private static final String KEY_COMMAND_ = "";
@@ -140,12 +140,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         String CREATE_CLIENT_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_CLIENTS +
                 "(" +
                 KEY_CLIENT_ID+ " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
-                KEY_CLIENT_FULL_NAME + " TEXT NOT NULL," +
-                KEY_CLIENT_CITY + " TEXT NOT NULL," +
+                KEY_CLIENT_NAME + " TEXT NOT NULL," +
+                KEY_CLIENT_TOWN + " TEXT NOT NULL," +
+                KEY_CLIENT_EMAIL + " TEXT ," +
                 KEY_CLIENT_ADDRESS + " TEXT NOT NULL," +
                 KEY_CLIENT_MAIN_PHONE_NUMBER + " TEXT NOT NULL," +
-                KEY_CLIENT_SECOND_PHONE_NUMBER + " TEXT," +
-                KEY_CLIENT_MORE_INFORMATION + " TEXT" +
+                KEY_CLIENT_SECOND_PHONE_NUMBER + " TEXT" +
                 ")";
 
         String CREATE_COMMAND_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_COMMANDS +
@@ -183,13 +183,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
         if (oldVersion != newVersion) {
 
-            String DROP_USERS_TABLE = "DROP TABLE " + TABLE_USERS;
-            String DROP_PRODUCT_IMAGES_TABLE = "DROP TABLE " + TABLE_PRODUCT_IMAGES;
-            String DROP_PRODUCTS_TABLE = "DROP TABLE " + TABLE_PRODUCTS;
-            String DROP_CATEGORIES_TABLE = "DROP TABLE " + TABLE_CATEGORIES;
-            String DROP_COMMAND_LINES_TABLE = "DROP TABLE " + TABLE_COMMAND_LINES;
-            String DROP_COMMANDS_TABLE = "DROP TABLE " + TABLE_COMMANDS;
-            String DROP_CLIENT_TABLE = "DROP TABLE " + TABLE_CLIENTS;
+            String DROP_USERS_TABLE = "DROP TABLE IF EXISTS " + TABLE_USERS;
+            String DROP_PRODUCT_IMAGES_TABLE = "DROP TABLE IF EXISTS " + TABLE_PRODUCT_IMAGES;
+            String DROP_PRODUCTS_TABLE = "DROP TABLE IF EXISTS " + TABLE_PRODUCTS;
+            String DROP_CATEGORIES_TABLE = "DROP TABLE IF EXISTS " + TABLE_CATEGORIES;
+            String DROP_COMMAND_LINES_TABLE = "DROP TABLE IF EXISTS " + TABLE_COMMAND_LINES;
+            String DROP_COMMANDS_TABLE = "DROP TABLE IF EXISTS " + TABLE_COMMANDS;
+            String DROP_CLIENT_TABLE = "DROP TABLE IF EXISTS " + TABLE_CLIENTS;
 
             database.execSQL(DROP_USERS_TABLE);
             database.execSQL(DROP_PRODUCT_IMAGES_TABLE);
@@ -418,12 +418,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public int isClientExist(String phoneNumber){
         int id = -1;
-        String query = " SELECT * FROM " + TABLE_CLIENTS + " WHERE " + KEY_CLIENT_MAIN_PHONE_NUMBER + " = " + phoneNumber;
+        String query = " SELECT * FROM " + TABLE_CLIENTS + " WHERE " + KEY_CLIENT_MAIN_PHONE_NUMBER + " = '" + phoneNumber + "'";
+        Log.d("DATABASE", "isClientExist: " + query);
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst())
         {
             id = cursor.getInt(0);
+            Log.d("DATABASE", "isClientExist: " + id);
         }
         db.close();
         return id;
@@ -438,12 +440,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         {
             client = new Client();
             client.setId(selectClientCursor.getInt(0));
-            client.setFullName(selectClientCursor.getString(1));
-            client.setCity(selectClientCursor.getString(2));
-            client.setAddress(selectClientCursor.getString(3));
-            client.setMainPhoneNumber(selectClientCursor.getString(4));
-            client.setSecondPhoneNumber(selectClientCursor.getString(5));
-            client.setMoreInformation(selectClientCursor.getString(6));
+            client.setName(selectClientCursor.getString(1));
+            client.setEmail(selectClientCursor.getString(2));
+            client.setTown(selectClientCursor.getString(3));
+            client.setAddress(selectClientCursor.getString(4));
+            client.setMainPhoneNumber(selectClientCursor.getString(5));
+            client.setSecondPhoneNumber(selectClientCursor.getString(6));
 
         }
         db.close();
@@ -452,17 +454,23 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public int addClient(Client client){
         int clientId = isClientExist(client.getMainPhoneNumber());
+        Log.d("DATABASE", "addClient: " + client.toString());
+        Log.d("DATABASE", "addClient: BEFORE" + clientId);
+
         if (clientId == -1){
+
             SQLiteDatabase db = this.getReadableDatabase();
             ContentValues cv = new ContentValues();
-            cv.put(KEY_CLIENT_ID, client.getId());
-            cv.put(KEY_CLIENT_FULL_NAME, client.getFullName());
+            cv.put(KEY_CLIENT_NAME, client.getName());
+            cv.put(KEY_CLIENT_EMAIL, client.getEmail());
             cv.put(KEY_CLIENT_ADDRESS, client.getAddress());
-            cv.put(KEY_CLIENT_CITY, client.getCity());
+            cv.put(KEY_CLIENT_TOWN, client.getTown());
             cv.put(KEY_CLIENT_MAIN_PHONE_NUMBER, client.getMainPhoneNumber());
             cv.put(KEY_CLIENT_SECOND_PHONE_NUMBER, client.getSecondPhoneNumber());
-            cv.put(KEY_CLIENT_MORE_INFORMATION, client.getMoreInformation());
             clientId = (int)db.insert(TABLE_CLIENTS, null, cv);
+
+            Log.d("DATABASE", "addClient: AFTER INSERT" + clientId);
+
             db.close();
             return clientId;
         }
@@ -502,6 +510,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public long addCommand(Command command){
+        Log.d("DATABASE", "addCommand: " + command.toString());
+
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(KEY_COMMAND_CLIENT_ID, command.getClient().getId());
@@ -517,7 +527,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public ArrayList<Command> getCommands(){
         ArrayList<Command> commands = null;
-        String selectCommandsQuery = "SELECT * FROM " + TABLE_COMMANDS ;
+        String selectCommandsQuery = "SELECT * FROM " + TABLE_COMMANDS + " WHERE " + KEY_COMMAND_IS_SYNC + " = 0";
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursorCommands = db.rawQuery(selectCommandsQuery, null);
         if (cursorCommands.moveToFirst()){
@@ -538,6 +548,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return commands;
     }
 
-
+    public void syncCommand(ArrayList<Command> commands){
+        SQLiteDatabase db = this.getReadableDatabase();
+        for (int i = 0; i < commands.size(); i++) {
+            ContentValues cv = new ContentValues();
+            cv.put(KEY_COMMAND_IS_SYNC, 1);
+            db.update(TABLE_COMMANDS, cv,KEY_COMMAND_ID + " =  ? ", new String[] {commands.get(i).getId().toString()});
+        }
+        db.close();
+    }
 
 }

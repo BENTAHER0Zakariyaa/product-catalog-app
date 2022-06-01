@@ -41,7 +41,7 @@ public class CartActivity extends AppCompatActivity {
         private EditText editTextAddress;
         private EditText editTextMainPhoneNumber;
         private EditText editTextSecondPhoneNumber;
-        private EditText editTextMoreInfo;
+        private EditText editTextEmail;
         private Button buttonCreateCommand;
 
         private View.OnClickListener onClickListenerCreateCommand= new View.OnClickListener() {
@@ -50,24 +50,24 @@ public class CartActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Client client = new Client();
 
-                client.setFullName(editTextFullName.getText().toString());
-                client.setCity(editTextCity.getText().toString());
+                client.setName(editTextFullName.getText().toString());
+                client.setTown(editTextCity.getText().toString());
+                client.setEmail(editTextEmail.getText().toString());
                 client.setAddress(editTextAddress.getText().toString());
                 client.setMainPhoneNumber(editTextMainPhoneNumber.getText().toString());
                 client.setSecondPhoneNumber(editTextSecondPhoneNumber.getText().toString());
-                client.setMoreInformation(editTextMoreInfo.getText().toString());
 
-                if (client.getFullName().equals("")){
-                    Toast.makeText(CartActivity.this, R.string.cart_acticity_fullname_required, Toast.LENGTH_SHORT).show();
+                if (client.getName().equals("")){
+                    Toast.makeText(CartActivity.this, R.string.cart_activity_name_required, Toast.LENGTH_SHORT).show();
                 }
-                else if (client.getCity().equals("")){
-                    Toast.makeText(CartActivity.this, R.string.cart_acticity_city_required, Toast.LENGTH_SHORT).show();
+                else if (client.getTown().equals("")){
+                    Toast.makeText(CartActivity.this, R.string.cart_activity_city_required, Toast.LENGTH_SHORT).show();
                 }
                 else if(client.getAddress().equals("")){
-                    Toast.makeText(CartActivity.this, R.string.cart_acticity_address_required, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CartActivity.this, R.string.cart_activity_address_required, Toast.LENGTH_SHORT).show();
                 }
                 else if(client.getMainPhoneNumber().equals("")){
-                    Toast.makeText(CartActivity.this, R.string.cart_acticity_main_phone_required, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CartActivity.this, R.string.cart_activity_main_phone_required, Toast.LENGTH_SHORT).show();
                 }
                 else {
                     client.setId(LoadingActivity.DB.addClient(client));
@@ -84,12 +84,12 @@ public class CartActivity extends AppCompatActivity {
 
             View dialogClientInfo = getLayoutInflater().inflate(R.layout.dialog_client_info, null);
 
-            this.editTextFullName = dialogClientInfo.findViewById(R.id.idEditTextFullName);
-            this.editTextCity = dialogClientInfo.findViewById(R.id.idEditTextCity);
+            this.editTextFullName = dialogClientInfo.findViewById(R.id.idEditTextName);
+            this.editTextCity = dialogClientInfo.findViewById(R.id.idEditTextTown);
             this.editTextAddress = dialogClientInfo.findViewById(R.id.idEditTextAddress);
             this.editTextMainPhoneNumber = dialogClientInfo.findViewById(R.id.idEditTextMainPhoneNumber);
             this.editTextSecondPhoneNumber = dialogClientInfo.findViewById(R.id.idEditTextSecondPhoneNumber);
-            this.editTextMoreInfo = dialogClientInfo.findViewById(R.id.idEditTextMoreInfo);
+            this.editTextEmail = dialogClientInfo.findViewById(R.id.idEditTextEmail);
             this.buttonCreateCommand = dialogClientInfo.findViewById(R.id.idButtonCreateCommand);
 
             this.buttonCreateCommand.setOnClickListener(onClickListenerCreateCommand);
@@ -109,7 +109,6 @@ public class CartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
-
         this.recyclerViewCardProducts = this.findViewById(R.id.idRecyclerViewCardProducts);
         this.buttonBack = this.findViewById(R.id.idButtonBack);
         this.buttonCreateCommand = this.findViewById(R.id.idButtonCreateCommand);
@@ -123,9 +122,7 @@ public class CartActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         recyclerViewCartAdapter = new RecyclerViewCartAdapter(this);
-
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false);
-
         recyclerViewCardProducts.setLayoutManager(gridLayoutManager);
         recyclerViewCardProducts.setAdapter(recyclerViewCartAdapter);
     }

@@ -1,10 +1,13 @@
 package com.example.productcatalogapp.adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -85,7 +88,7 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
             public void onClick(View v) {
                 LoadingActivity.cart.getCartLine(getAdapterPosition()).IncrementQuantity();
                 editViewQuantity.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getQuantity()));
-                textViewTotal.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getTotalPrice()));
+                textViewTotal.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getTotalPrice())+" Dh");
                 CatalogActivity.buttonCart.setText(context.getString(R.string.dashboard_activity_button_cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
             }
         };
@@ -103,12 +106,37 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
         };
 
         private View.OnClickListener onClickListenerButtonDelete = new View.OnClickListener() {
+
+            AlertDialog.Builder deleteCommandLineAlertDialog = null;
+            AlertDialog deleteCommandLineAlert = null;
+
+            DialogInterface.OnClickListener deleteCommandLineAlertDialogPositiveButton = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    LoadingActivity.cart.removeCartLine(LoadingActivity.cart.getCartLine(getAdapterPosition()));
+                    CartActivity.recyclerViewCartAdapter.notifyDataSetChanged();
+                    CatalogActivity.buttonCart.setText(context.getString(R.string.dashboard_activity_button_cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
+                    deleteCommandLineAlert.dismiss();
+                }
+            };
+
+            DialogInterface.OnClickListener deleteCommandLineAlertDialogNegativeButton = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    deleteCommandLineAlert.cancel();
+                }
+            };
+
             @Override
             public void onClick(View v) {
-                LoadingActivity.cart.removeCartLine(LoadingActivity.cart.getCartLine(getAdapterPosition()));
-                Log.d("SSS", "onClick: "+LoadingActivity.cart.getCount());
-                CartActivity.recyclerViewCartAdapter.notifyDataSetChanged();
-                CatalogActivity.buttonCart.setText(context.getString(R.string.dashboard_activity_button_cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
+                this.deleteCommandLineAlertDialog = new AlertDialog.Builder(context);
+                this.deleteCommandLineAlertDialog.setTitle(R.string.action_confirmation);
+                this.deleteCommandLineAlertDialog.setMessage(R.string.cart_activity_delete_confirmation_message);
+                this.deleteCommandLineAlertDialog.setPositiveButton(R.string.action_delete, deleteCommandLineAlertDialogPositiveButton);
+                this.deleteCommandLineAlertDialog.setNegativeButton(R.string.action_cancel, deleteCommandLineAlertDialogNegativeButton);
+                this.deleteCommandLineAlert = deleteCommandLineAlertDialog.create();
+                this.deleteCommandLineAlert.show();
+
             }
         };
 

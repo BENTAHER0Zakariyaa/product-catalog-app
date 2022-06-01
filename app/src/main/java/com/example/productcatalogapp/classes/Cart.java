@@ -1,5 +1,9 @@
 package com.example.productcatalogapp.classes;
 
+import android.util.Log;
+
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 
 public class Cart {
@@ -64,6 +68,7 @@ public class Cart {
         Command command = new Command();
 
         command.setClient(client);
+
         command.setTotal(this.getTotal());
 
         for (int i = 0; i < this.cartLines.size(); i++) {
@@ -76,5 +81,9 @@ public class Cart {
         this.init();
         return command;
 
+    }
+
+    public boolean isNotEmpty() {
+        return getCount() != 0;
     }
 }

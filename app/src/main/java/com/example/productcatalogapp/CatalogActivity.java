@@ -1,17 +1,14 @@
 package com.example.productcatalogapp;
 
-import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -22,19 +19,22 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.productcatalogapp.API.APIHelper;
 import com.example.productcatalogapp.adapters.MainGridViewAdapter;
-import com.example.productcatalogapp.classes.Cart;
 import com.example.productcatalogapp.classes.Category;
+import com.example.productcatalogapp.classes.Command;
 import com.example.productcatalogapp.classes.Product;
 import com.example.productcatalogapp.classes.ProductImage;
-import com.example.productcatalogapp.database.DataBaseHelper;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -45,19 +45,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CatalogActivity extends AppCompatActivity {
-
-    // TAGS
-    private static final String LOG_DATABASE_TAG = "DATABASE";
 
     private ArrayList<Category> categories = null;
     private ArrayList<Product> products = null;
@@ -72,38 +67,109 @@ public class CatalogActivity extends AppCompatActivity {
     private MainGridViewAdapter mainGridViewAdapter = null;
 
     private View.OnClickListener buttonLogoutOnClickListener = new View.OnClickListener() {
+
+        AlertDialog.Builder logoutConfirmationAlertDialog = null;
+        AlertDialog logoutConfirmationAlert = null;
+
+        DialogInterface.OnClickListener confirmationAlertDialogPositiveButton = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                LoadingActivity.preferences.edit().putBoolean("isSessionSaved", false).putInt("userId", -1).apply();
+                Intent intent = new Intent();
+                setResult(LoadingActivity.CATALOG_ACTIVITY_START_CODE, intent);
+                LoadingActivity.cart.removeAll();
+                finish();
+            }
+        };
+
+        DialogInterface.OnClickListener confirmationAlertDialogNegativeButton = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                logoutConfirmationAlert.dismiss();
+            }
+        };
+
         @Override
         public void onClick(View v) {
-            LoadingActivity.preferences.edit().putBoolean("isSessionSaved", false).putInt("userId", -1).apply();
-            Intent intent = new Intent();
-            setResult(LoadingActivity.CATALOG_ACTIVITY_START_CODE, intent);
-            LoadingActivity.cart.removeAll();
-            finish();
+
+            this.logoutConfirmationAlertDialog = new AlertDialog.Builder(CatalogActivity.this);
+            this.logoutConfirmationAlertDialog.setTitle(R.string.action_confirmation);
+            this.logoutConfirmationAlertDialog.setMessage(R.string.catalog_activity_logout_confirmation_message);
+            this.logoutConfirmationAlertDialog.setPositiveButton(R.string.action_accept, confirmationAlertDialogPositiveButton);
+            this.logoutConfirmationAlertDialog.setNegativeButton(R.string.action_cancel, confirmationAlertDialogNegativeButton);
+            this.logoutConfirmationAlert = logoutConfirmationAlertDialog.create();
+            this.logoutConfirmationAlert.show();
+
         }
     };
 
     private View.OnClickListener buttonCartOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(CatalogActivity.this, CartActivity.class);
-            startActivity(intent);
+            if (LoadingActivity.cart.isNotEmpty()){
+                Intent intent = new Intent(CatalogActivity.this, CartActivity.class);
+                startActivity(intent);
+            }else{
+                Toast.makeText(CatalogActivity.this, R.string.catalog_activity_cart_is_empty, Toast.LENGTH_SHORT).show();
+            }
         }
     };
+
     private View.OnClickListener buttonUpdateCommandsOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Gson gson = new Gson();
-            String json = gson.toJson(LoadingActivity.DB.getCommands());
-            Log.d("json", json);
-            Toast.makeText(CatalogActivity.this, json, Toast.LENGTH_SHORT).show();
+            if(LoadingActivity.isConnected()) {
+                ArrayList<Command> commands = LoadingActivity.DB.getCommands();
+                if (commands != null ) {
+                    CatalogActivity.this.buttonUpdateCommands.setEnabled(false);
+                    Gson gson = new Gson();
+                    String json = gson.toJson(commands);
+                    RequestQueue requestCreateCommandQueue = Volley.newRequestQueue(CatalogActivity.this);
+                    String URL = APIHelper.CUSTOM_API_URL + "?page=createCommand";
 
+                    StringRequest jsonObjReq = new StringRequest(
+                            Request.Method.PUT,
+                            URL,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    LoadingActivity.DB.syncCommand(commands);
+                                    ArrayList<Command> commands = null;
+                                    CatalogActivity.this.buttonUpdateCommands.setEnabled(true);
+                                }
+                            },
+                            null
+                    ) {
+                        @Override
+                        public Map<String, String> getHeaders() throws AuthFailureError {
+                            HashMap header = new HashMap();
+                            header.put("DOLAPIKEY", LoadingActivity.currentUser.getToken());
+                            return header;
+                        }
+
+                        public byte[] getBody() throws AuthFailureError {
+                            return json.getBytes();
+                        }
+
+                    };
+                    requestCreateCommandQueue.add(jsonObjReq);
+                }
+                else {
+                    Toast.makeText(CatalogActivity.this, R.string.dashboard_activity_all_command_is_synced, Toast.LENGTH_SHORT).show();
+                }
+            }
+            else {
+                Toast.makeText(CatalogActivity.this, R.string.dashboard_activity_you_are_not_connected, Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
     private View.OnClickListener buttonUpdateOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+
             if(LoadingActivity.isConnected()) {
+                CatalogActivity.this.buttonUpdate.setEnabled(false);
                 updateCategory("product");
             }
             else {
@@ -180,14 +246,10 @@ public class CatalogActivity extends AppCompatActivity {
 
                         long isAdded = LoadingActivity.DB.addCategory(c);
 
-                        Log.d(LOG_DATABASE_TAG, "Is Category ADDED TO ARRAY LIST: " + c.toString());
-                        Log.d(LOG_DATABASE_TAG, "Is Category ADDED TO DATABASE : " + isAdded);
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
-
                 updateProduct();
             }
         }, null){
@@ -203,7 +265,8 @@ public class CatalogActivity extends AppCompatActivity {
 
     void updateProduct(){
         RequestQueue requestProductsQueue = Volley.newRequestQueue(CatalogActivity.this);
-        JsonArrayRequest requestProducts = new JsonArrayRequest(Request.Method.GET, APIHelper.CUSTOM_API_URL, null, new Response.Listener<JSONArray>(){
+        String URL = APIHelper.CUSTOM_API_URL+"?page=products";
+        JsonArrayRequest requestProducts = new JsonArrayRequest(Request.Method.GET, URL, null, new Response.Listener<JSONArray>(){
             @Override
             public void onResponse(JSONArray response) {
 
@@ -249,15 +312,13 @@ public class CatalogActivity extends AppCompatActivity {
 
                         long isAdded = LoadingActivity.DB.addProduct(p);
 
-                        Log.d(LOG_DATABASE_TAG, "Is Product ADDED TO ARRAY LIST: " + p.toString());
-                        Log.d(LOG_DATABASE_TAG, "Is Product ADDED TO DATABASE : " + isAdded);
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
 
                 fillGrid();
+                CatalogActivity.this.buttonUpdate.setEnabled(true);
             }
         }, null){
             @Override
@@ -309,8 +370,6 @@ public class CatalogActivity extends AppCompatActivity {
                 // immediately available to the user.
                 MediaScannerConnection.scanFile(CatalogActivity.this, new String[]{imageFile.getAbsolutePath()}, null, new MediaScannerConnection.OnScanCompletedListener() {
                     public void onScanCompleted(String path, Uri uri) {
-                         Log.i("ExternalStorage", "Scanned " + path + ":");
-                         Log.i("ExternalStorage", "-> uri=" + uri);
                     }
                 });
             } catch (Exception e) {
@@ -321,7 +380,6 @@ public class CatalogActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-//            showToast("Image Saved!");
         }
     }
 

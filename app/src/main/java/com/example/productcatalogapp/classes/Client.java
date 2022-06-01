@@ -3,35 +3,33 @@ package com.example.productcatalogapp.classes;
 public class Client {
 
     private Integer id;
-    private String fullName;
-    private String city;
+    private String name;
+    private String town;
+    private String email;
     private String address;
     private String mainPhoneNumber;
     private String secondPhoneNumber;
-    private String moreInformation;
-
 
     public Client() {}
 
-    public Client(Integer id, String fullName, String city, String address, String mainPhoneNumber, String secondPhoneNumber, String moreInformation) {
+    public Client(Integer id, String name, String town, String email, String address, String mainPhoneNumber, String secondPhoneNumber) {
         this.setId(id);
-        this.setFullName(fullName);
-        this.setCity(city);
+        this.setName(name);
+        this.setTown(town);
+        this.setEmail(email);
         this.setAddress(address);
         this.setMainPhoneNumber(mainPhoneNumber);
         this.setSecondPhoneNumber(secondPhoneNumber);
-        this.setMoreInformation(moreInformation);
     }
 
-    public Client(String fullName, String city, String address, String mainPhoneNumber, String secondPhoneNumber, String moreInformation) {
-        this.setCity(city);
-        this.setFullName(fullName);
+    public Client(String name, String town, String email, String address, String mainPhoneNumber, String secondPhoneNumber) {
+        this.setTown(town);
+        this.setName(name);
+        this.setEmail(email);
         this.setAddress(address);
         this.setMainPhoneNumber(mainPhoneNumber);
         this.setSecondPhoneNumber(secondPhoneNumber);
-        this.setMoreInformation(moreInformation);
     }
-
 
     public Integer getId() {
         return id;
@@ -41,20 +39,28 @@ public class Client {
         this.id = id;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getName() {
+        return name;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getCity() {
-        return city;
+    public String getTown() {
+        return town;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setTown(String town) {
+        this.town = town;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getAddress() {
@@ -81,14 +87,16 @@ public class Client {
         this.secondPhoneNumber = secondPhoneNumber;
     }
 
-    public String getMoreInformation() {
-        return moreInformation;
+    @Override
+    public String toString() {
+        return "Client{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", town='" + town + '\'' +
+                ", email='" + email + '\'' +
+                ", address='" + address + '\'' +
+                ", mainPhoneNumber='" + mainPhoneNumber + '\'' +
+                ", secondPhoneNumber='" + secondPhoneNumber + '\'' +
+                '}';
     }
-
-    public void setMoreInformation(String moreInformation) {
-        this.moreInformation = moreInformation;
-    }
-
-
-
 }

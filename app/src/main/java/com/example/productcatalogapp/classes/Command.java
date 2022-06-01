@@ -62,4 +62,14 @@ public class Command {
         isSync = sync;
     }
 
+    @Override
+    public String toString() {
+        return "Command{" +
+                "id=" + id +
+                ", client=" + client +
+                ", total=" + total +
+                ", commandLines=" + commandLines.size() +
+                ", isSync=" + isSync +
+                '}';
+    }
 }

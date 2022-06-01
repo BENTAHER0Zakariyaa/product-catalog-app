@@ -3,8 +3,8 @@
     <string name="app_name">Product Catalog App</string>
     <string name="main_activity_"></string>
     <string name="main_activity_permission_message">Our application need Permission to access</string>
-    <string name="main_activity_hint_username_input">Please Enter your user name</string>
-    <string name="main_activity_hint_password_input">Please Enter your password</string>
+    <string name="main_activity_hint_username_input">User name</string>
+    <string name="main_activity_hint_password_input">Password</string>
     <string name="main_activity_text_save_session_checkbox">Save your session</string>
     <string name="main_activity_text_login_button">LOGIN</string>
 
@@ -28,17 +28,23 @@
     <string name="action_delete">Delete</string>
     <string name="action_create_command">Create command</string>
 
-    <string name="dialog_client_info_hint_full_name">Enter client full name</string>
+    <string name="dialog_client_info_hint_name">Enter client name</string>
     <string name="dialog_client_info_hint_address">Enter client address</string>
     <string name="dialog_client_info_hint_main_phone_number">Enter client main phone number</string>
     <string name="dialog_client_info_hint_second_phone_number">Enter client second phone number</string>
-    <string name="dialog_client_info_hint_more_info">More info</string>
     <string name="dialog_client_info_button_create_command">create command</string>
-    <string name="dialog_client_info_hint_city">Enter client city</string>
-    <string name="cart_acticity_fullname_required">Client full name required</string>
-    <string name="cart_acticity_city_required">Client city required</string>
-    <string name="cart_acticity_address_required">Client address required</string>
-    <string name="cart_acticity_main_phone_required">Client main phone number required</string>
+    <string name="dialog_client_info_hint_town">Enter client town</string>
+    <string name="cart_activity_name_required">Client full name required</string>
+    <string name="cart_activity_city_required">Client city required</string>
+    <string name="cart_activity_address_required">Client address required</string>
+    <string name="cart_activity_main_phone_required">Client main phone number required</string>
     <string name="dashboard_activity_text_sync_commands_button">sync commands</string>
+    <string name="dialog_client_info_hint_email">Enter client email</string>
+    <string name="catalog_activity_cart_is_empty">Cart is empty</string>
+    <string name="action_confirmation">Confirmation</string>
+    <string name="catalog_activity_logout_confirmation_message">Are you sure you want to log out ? </string>
+    <string name="action_accept">Accept</string>
+    <string name="dashboard_activity_all_command_is_synced">All command is sync</string>
+    <string name="cart_activity_delete_confirmation_message">Are you sure you want to delete this item ?</string>
 
 </resources>
