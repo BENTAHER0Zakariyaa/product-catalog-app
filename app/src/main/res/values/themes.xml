@@ -2,9 +2,9 @@
     <!-- Base application theme. -->
     <style name="Theme.ProductCatalogApp" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryDark">@color/purple_700</item>
-        <item name="colorAccent">@color/black</item>
+        <item name="colorPrimary">@color/bg_primary</item>
+        <item name="colorPrimaryDark">@color/bg_primary</item>
+        <item name="colorAccent">@color/text_primary</item>
         <!-- Customize your theme here. -->
     </style>
 </resources>

@@ -33,6 +33,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.productcatalogapp.API.APIHelper;
+import com.example.productcatalogapp.classes.CustomToast;
 import com.example.productcatalogapp.classes.User;
 import com.example.productcatalogapp.database.DataBaseHelper;
 
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             if (
                     ContextCompat.checkSelfPermission(MainActivity.this, LoadingActivity.APP_PERMISSIONS[0]) != PackageManager.PERMISSION_GRANTED
-                &&
+                    ||
                     ContextCompat.checkSelfPermission(MainActivity.this, LoadingActivity.APP_PERMISSIONS[1]) != PackageManager.PERMISSION_GRANTED
             ) {
                 ActivityCompat.requestPermissions(MainActivity.this, LoadingActivity.APP_PERMISSIONS, MainActivity.PERMISSIONS_CODE);
@@ -72,10 +73,24 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.buttonLogin.setEnabled(false);
                 LoadingActivity.currentUser = new User(MainActivity.this.editTextUserName.getText().toString(), MainActivity.this.editTextPassword.getText().toString());
                 LoadingActivity.currentUser.setConnected(LoadingActivity.isConnected());
-                if (LoadingActivity.currentUser.getConnected()) {
-                    MainActivity.this.userConnected();
-                } else {
-                    MainActivity.this.userDeConnected();
+                if (LoadingActivity.currentUser.getUsername().equals("")) {
+                    CustomToast toast = new CustomToast(MainActivity.this,  R.string.main_activity_error_username_required, R.drawable.ic_warning);
+                    toast.Make();
+                    toast.Show();
+                    MainActivity.this.buttonLogin.setEnabled(true);
+                }
+                else if (LoadingActivity.currentUser.getPassword().equals("")) {
+                    CustomToast toast = new CustomToast(MainActivity.this,  R.string.main_activity_error_password_required, R.drawable.ic_warning);
+                    toast.Make();
+                    toast.Show();
+                    MainActivity.this.buttonLogin.setEnabled(true);
+                }
+                else {
+                    if (LoadingActivity.currentUser.getConnected()) {
+                        MainActivity.this.userConnected();
+                    } else {
+                        MainActivity.this.userDeConnected();
+                    }
                 }
             }
         }
@@ -112,69 +127,59 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void userConnected(){
-        if (LoadingActivity.currentUser.getUsername().equals("")) {
-            Toast.makeText(MainActivity.this, R.string.main_activity_error_username_required, Toast.LENGTH_SHORT).show();
-            this.buttonLogin.setEnabled(true);
-        }
-        else if (LoadingActivity.currentUser.getPassword().equals("")) {
-            Toast.makeText(MainActivity.this, R.string.main_activity_error_password_required, Toast.LENGTH_SHORT).show();
-            this.buttonLogin.setEnabled(true);
-        }
-        else {
-            String loginURL = APIHelper.API_URL + "/login?login=" + LoadingActivity.currentUser.getUsername() + "&password=" + LoadingActivity.currentUser.getPassword();
+        String loginURL = APIHelper.API_URL + "/login?login=" + LoadingActivity.currentUser.getUsername() + "&password=" + LoadingActivity.currentUser.getPassword();
 
-            RequestQueue loginRequestQueue = Volley.newRequestQueue(MainActivity.this);
+        RequestQueue loginRequestQueue = Volley.newRequestQueue(MainActivity.this);
 
-            JsonObjectRequest loginRequest = new JsonObjectRequest(Request.Method.GET, loginURL, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
+        JsonObjectRequest loginRequest = new JsonObjectRequest(Request.Method.GET, loginURL, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
 
-                    try {
-                        LoadingActivity.currentUser.setToken(response.getJSONObject("success").getString("token"));
+                try {
+                    LoadingActivity.currentUser.setToken(response.getJSONObject("success").getString("token"));
 
-                        RequestQueue requestInfoQueue = Volley.newRequestQueue(MainActivity.this);
-                        String userDataURL = APIHelper.API_URL + "/users/login/" + LoadingActivity.currentUser.getUsername();
+                    RequestQueue requestInfoQueue = Volley.newRequestQueue(MainActivity.this);
+                    String userDataURL = APIHelper.API_URL + "/users/login/" + LoadingActivity.currentUser.getUsername();
 
-                        JsonObjectRequest userDataRequest = new JsonObjectRequest(Request.Method.GET, userDataURL, null, new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                try {
-                                    LoadingActivity.currentUser.setId(Integer.valueOf(response.getString("id")));
-                                    if (!LoadingActivity.DB.isUserExist(LoadingActivity.currentUser.getId())) {
-                                        LoadingActivity.DB.addUser(LoadingActivity.currentUser);
-                                    }
-                                    MainActivity.this.startCatalogActivity();
-                                    MainActivity.this.saveSession(LoadingActivity.currentUser.getId());
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                    MainActivity.this.buttonLogin.setEnabled(true);
+                    JsonObjectRequest userDataRequest = new JsonObjectRequest(Request.Method.GET, userDataURL, null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                LoadingActivity.currentUser.setId(Integer.valueOf(response.getString("id")));
+                                if (!LoadingActivity.DB.isUserExist(LoadingActivity.currentUser.getId())) {
+                                    LoadingActivity.DB.addUser(LoadingActivity.currentUser);
                                 }
+                                MainActivity.this.startCatalogActivity();
+                                MainActivity.this.saveSession(LoadingActivity.currentUser.getId());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                MainActivity.this.buttonLogin.setEnabled(true);
                             }
+                        }
 
-                        }, null) {
-                            @Override
-                            public Map<String, String> getHeaders() throws AuthFailureError {
-                                HashMap header = new HashMap();
-                                header.put("DOLAPIKEY", LoadingActivity.currentUser.getToken());
-                                return header;
-                            }
-                        };
-                        requestInfoQueue.add(userDataRequest);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        MainActivity.this.buttonLogin.setEnabled(true);
-                    }
-                }
-
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(MainActivity.this, R.string.main_activity_error_invalid_fields, Toast.LENGTH_SHORT).show();
+                    }, null) {
+                        @Override
+                        public Map<String, String> getHeaders() throws AuthFailureError {
+                            HashMap header = new HashMap();
+                            header.put("DOLAPIKEY", LoadingActivity.currentUser.getToken());
+                            return header;
+                        }
+                    };
+                    requestInfoQueue.add(userDataRequest);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                     MainActivity.this.buttonLogin.setEnabled(true);
                 }
-            });
-            loginRequestQueue.add(loginRequest);
-        }
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(MainActivity.this, R.string.main_activity_error_invalid_fields, Toast.LENGTH_SHORT).show();
+                MainActivity.this.buttonLogin.setEnabled(true);
+            }
+        });
+        loginRequestQueue.add(loginRequest);
     }
 
     void userDeConnected (){

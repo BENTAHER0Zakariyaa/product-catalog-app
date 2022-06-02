@@ -4,12 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".CatalogActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/bg_primary">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="20dp"
+        android:paddingHorizontal="23dp"
+        android:paddingVertical="@dimen/padding_sm"
         >
         <LinearLayout
             android:layout_width="match_parent"
@@ -20,7 +22,9 @@
             <Button
                 android:id="@+id/idButtonCart"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="32dp"
+                android:textColor="@color/text_secondary"
+                android:background="@drawable/login_layout_button"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,20 +38,28 @@
             <Button
                 android:id="@+id/idButtonUpdateCommands"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:layout_marginRight="16dp"
-                android:text="@string/dashboard_activity_text_sync_commands_button" />
+                android:text="@string/dashboard_activity_text_sync_commands_button"
+                android:textColor="@color/text_secondary"
+                android:background="@drawable/login_layout_button"/>
             <Button
                 android:id="@+id/idButtonUpdate"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:layout_marginRight="16dp"
-                android:text="@string/dashboard_activity_text_update_button" />
+                android:text="@string/dashboard_activity_text_update_button"
+                android:background="@drawable/login_layout_button"
+                android:textColor="@color/text_secondary"
+                />
             <Button
                 android:id="@+id/idButtonLogout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dashboard_activity_text_logout_button" />
+                android:layout_height="32dp"
+                android:text="@string/dashboard_activity_text_logout_button"
+                android:background="@drawable/login_layout_button"
+                android:textColor="@color/text_secondary"
+                />
         </LinearLayout>
     </LinearLayout>
     <android.support.v7.widget.RecyclerView

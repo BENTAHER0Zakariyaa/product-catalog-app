@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/login_layout_toast"
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/idImageViewIcon"
+            android:padding="@dimen/margin_md"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_launcher_background"/>
+        <TextView
+            android:id="@+id/idEditTextMessage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingRight="@dimen/padding_md"
+            android:textColor="@color/text_secondary"
+            android:fontFamily="@font/roboto_black"
+            android:text="MESSAGE"/>
+    </LinearLayout>
+
+</LinearLayout>

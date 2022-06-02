@@ -58,7 +58,6 @@ public class MainGridViewAdapter extends RecyclerView.Adapter<MainGridViewAdapte
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         Product product = products.get(i);
 
-        viewHolder.textViewCategory.setText(product.getCategory().getName());
 
         if (product.getImages() !=  null){
             ProductImage image = product.getImages().get(0);
@@ -70,7 +69,7 @@ public class MainGridViewAdapter extends RecyclerView.Adapter<MainGridViewAdapte
         }
 
         viewHolder.textViewLabel.setText(product.getLabel());
-        viewHolder.textViewPrice.setText(String.valueOf(product.getPrice())+ " Dh");
+        viewHolder.textViewPrice.setText(String.valueOf(product.getPrice()));
     }
 
     @Override
@@ -80,7 +79,6 @@ public class MainGridViewAdapter extends RecyclerView.Adapter<MainGridViewAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView textViewCategory = null;
         private ImageView imageViewImage = null;
         private TextView textViewLabel = null;
         private TextView textViewPrice = null;
@@ -171,7 +169,6 @@ public class MainGridViewAdapter extends RecyclerView.Adapter<MainGridViewAdapte
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            this.textViewCategory   = itemView.findViewById(R.id.idTextViewCategory);
             this.imageViewImage     = itemView.findViewById(R.id.idImageView);
             this.textViewLabel      = itemView.findViewById(R.id.idTextViewLabel);
             this.textViewPrice      = itemView.findViewById(R.id.idTextViewPrice);

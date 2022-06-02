@@ -526,7 +526,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public ArrayList<Command> getCommands(){
-        ArrayList<Command> commands = null;
+        ArrayList<Command> commands = new ArrayList<Command>();
         String selectCommandsQuery = "SELECT * FROM " + TABLE_COMMANDS + " WHERE " + KEY_COMMAND_IS_SYNC + " = 0";
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursorCommands = db.rawQuery(selectCommandsQuery, null);

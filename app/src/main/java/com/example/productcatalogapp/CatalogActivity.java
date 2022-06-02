@@ -33,6 +33,7 @@ import com.example.productcatalogapp.API.APIHelper;
 import com.example.productcatalogapp.adapters.MainGridViewAdapter;
 import com.example.productcatalogapp.classes.Category;
 import com.example.productcatalogapp.classes.Command;
+import com.example.productcatalogapp.classes.CustomToast;
 import com.example.productcatalogapp.classes.Product;
 import com.example.productcatalogapp.classes.ProductImage;
 import com.google.gson.Gson;
@@ -110,7 +111,9 @@ public class CatalogActivity extends AppCompatActivity {
                 Intent intent = new Intent(CatalogActivity.this, CartActivity.class);
                 startActivity(intent);
             }else{
-                Toast.makeText(CatalogActivity.this, R.string.catalog_activity_cart_is_empty, Toast.LENGTH_SHORT).show();
+                CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.catalog_activity_cart_is_empty, R.drawable.ic_cart_64);
+                toast.Make();
+                toast.Show();
             }
         }
     };
@@ -120,8 +123,11 @@ public class CatalogActivity extends AppCompatActivity {
         public void onClick(View v) {
             if(LoadingActivity.isConnected()) {
                 ArrayList<Command> commands = LoadingActivity.DB.getCommands();
-                if (commands != null ) {
-                    CatalogActivity.this.buttonUpdateCommands.setEnabled(false);
+
+                CatalogActivity.this.buttonUpdateCommands.setEnabled(false);
+
+                if (commands.size() != 0 ) {
+
                     Gson gson = new Gson();
                     String json = gson.toJson(commands);
                     RequestQueue requestCreateCommandQueue = Volley.newRequestQueue(CatalogActivity.this);
@@ -134,8 +140,12 @@ public class CatalogActivity extends AppCompatActivity {
                                 @Override
                                 public void onResponse(String response) {
                                     LoadingActivity.DB.syncCommand(commands);
-                                    ArrayList<Command> commands = null;
+                                    ArrayList<Command> commands = new ArrayList<Command>();
                                     CatalogActivity.this.buttonUpdateCommands.setEnabled(true);
+                                    CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.action_done, R.drawable.ic_success_64);
+                                    toast.Make();
+                                    toast.Show();
+
                                 }
                             },
                             null
@@ -155,11 +165,19 @@ public class CatalogActivity extends AppCompatActivity {
                     requestCreateCommandQueue.add(jsonObjReq);
                 }
                 else {
-                    Toast.makeText(CatalogActivity.this, R.string.dashboard_activity_all_command_is_synced, Toast.LENGTH_SHORT).show();
+                    CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.dashboard_activity_all_command_is_sync, R.drawable.ic_success_64);
+                    toast.Make();
+                    toast.Show();
+                    CatalogActivity.this.buttonUpdateCommands.setEnabled(true);
+
                 }
             }
             else {
-                Toast.makeText(CatalogActivity.this, R.string.dashboard_activity_you_are_not_connected, Toast.LENGTH_SHORT).show();
+                CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.dashboard_activity_you_are_not_connected, R.drawable.ic_warning);
+                toast.Make();
+                toast.Show();
+                CatalogActivity.this.buttonUpdateCommands.setEnabled(true);
+
             }
         }
     };
@@ -173,7 +191,9 @@ public class CatalogActivity extends AppCompatActivity {
                 updateCategory("product");
             }
             else {
-                Toast.makeText(CatalogActivity.this, R.string.dashboard_activity_you_are_not_connected, Toast.LENGTH_SHORT).show();
+                CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.dashboard_activity_you_are_not_connected, R.drawable.ic_warning);
+                toast.Make();
+                toast.Show();
             }
         }
     };
@@ -202,7 +222,13 @@ public class CatalogActivity extends AppCompatActivity {
 
         // IF OFFLINE DO
         this.products = LoadingActivity.DB.getProducts();
-
+        this.products.add(this.products.get(0));
+        this.products.add(this.products.get(1));
+        this.products.add(this.products.get(2));
+        this.products.add(this.products.get(1));
+        this.products.add(this.products.get(3));
+        this.products.add(this.products.get(0));
+        this.products.add(this.products.get(2));
         this.fillGrid();
 
         this.buttonCart.setText(getString(R.string.dashboard_activity_button_cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
@@ -318,6 +344,10 @@ public class CatalogActivity extends AppCompatActivity {
                 }
 
                 fillGrid();
+                CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.action_done, R.drawable.ic_success_64);
+                toast.Make();
+                toast.Show();
+
                 CatalogActivity.this.buttonUpdate.setEnabled(true);
             }
         }, null){
