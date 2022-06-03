@@ -131,7 +131,7 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
             public void onClick(View v) {
                 this.deleteCommandLineAlertDialog = new AlertDialog.Builder(context);
                 this.deleteCommandLineAlertDialog.setTitle(R.string.action_confirmation);
-                this.deleteCommandLineAlertDialog.setMessage(R.string.cart_activity_delete_confirmation_message);
+                this.deleteCommandLineAlertDialog.setMessage(R.string.confirmation_delete_message);
                 this.deleteCommandLineAlertDialog.setPositiveButton(R.string.action_delete, deleteCommandLineAlertDialogPositiveButton);
                 this.deleteCommandLineAlertDialog.setNegativeButton(R.string.action_cancel, deleteCommandLineAlertDialogNegativeButton);
                 this.deleteCommandLineAlert = deleteCommandLineAlertDialog.create();

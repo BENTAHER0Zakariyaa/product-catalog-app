@@ -24,7 +24,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     // Database Info
     private static final String DATABASE_NAME = "productCatalogApp";
-    private static final int DATABASE_VERSION = 13;
+    private static final int DATABASE_VERSION = 18;
 
     // Table Names
     private static final String TABLE_ = "";
@@ -218,7 +218,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
-           user = new User(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3),cursor.getInt(4) == 1);
+            user = new User();
+            user.setId(cursor.getInt(0));
+            user.setUsername(cursor.getString(1));
+            user.setPassword(cursor.getString(2));
+            user.setConnected(cursor.getInt(3) == 1);
+            user.setToken(cursor.getString(4));
         }
         cursor.close();
         return user;
@@ -230,7 +235,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
-            user = new User(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3),cursor.getInt(4) == 1);
+            user = new User();
+            user.setId(cursor.getInt(0));
+            user.setUsername(cursor.getString(1));
+            user.setPassword(cursor.getString(2));
+            user.setConnected(cursor.getInt(3) == 1);
+            user.setToken(cursor.getString(4));
+
         }
         cursor.close();
         return user;

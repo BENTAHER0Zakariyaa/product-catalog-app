@@ -137,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     LoadingActivity.currentUser.setToken(response.getJSONObject("success").getString("token"));
-
                     RequestQueue requestInfoQueue = Volley.newRequestQueue(MainActivity.this);
                     String userDataURL = APIHelper.API_URL + "/users/login/" + LoadingActivity.currentUser.getUsername();
 
@@ -146,8 +145,10 @@ public class MainActivity extends AppCompatActivity {
                         public void onResponse(JSONObject response) {
                             try {
                                 LoadingActivity.currentUser.setId(Integer.valueOf(response.getString("id")));
+
                                 if (!LoadingActivity.DB.isUserExist(LoadingActivity.currentUser.getId())) {
                                     LoadingActivity.DB.addUser(LoadingActivity.currentUser);
+                                    Log.d("sss", "onResponse: "+ LoadingActivity.DB.getUser(2).toString());
                                 }
                                 MainActivity.this.startCatalogActivity();
                                 MainActivity.this.saveSession(LoadingActivity.currentUser.getId());

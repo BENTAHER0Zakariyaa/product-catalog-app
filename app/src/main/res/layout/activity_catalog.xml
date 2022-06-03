@@ -16,7 +16,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="2.5"
             android:orientation="horizontal"
             >
             <Button
@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:layout_marginRight="16dp"
-                android:text="@string/dashboard_activity_text_sync_commands_button"
+                android:text="@string/action_sync_commands"
                 android:textColor="@color/text_secondary"
                 android:background="@drawable/login_layout_button"/>
             <Button
@@ -48,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:layout_marginRight="16dp"
-                android:text="@string/dashboard_activity_text_update_button"
+                android:text="@string/action_sync_products"
                 android:background="@drawable/login_layout_button"
                 android:textColor="@color/text_secondary"
                 />
@@ -56,7 +56,7 @@
                 android:id="@+id/idButtonLogout"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
-                android:text="@string/dashboard_activity_text_logout_button"
+                android:text="@string/action_logout"
                 android:background="@drawable/login_layout_button"
                 android:textColor="@color/text_secondary"
                 />

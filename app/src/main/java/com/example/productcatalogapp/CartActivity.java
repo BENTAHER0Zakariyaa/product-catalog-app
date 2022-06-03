@@ -58,16 +58,16 @@ public class CartActivity extends AppCompatActivity {
                 client.setSecondPhoneNumber(editTextSecondPhoneNumber.getText().toString());
 
                 if (client.getName().equals("")){
-                    Toast.makeText(CartActivity.this, R.string.cart_activity_name_required, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CartActivity.this, R.string.error_name_required, Toast.LENGTH_SHORT).show();
                 }
                 else if (client.getTown().equals("")){
-                    Toast.makeText(CartActivity.this, R.string.cart_activity_city_required, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CartActivity.this, R.string.error_town_required, Toast.LENGTH_SHORT).show();
                 }
                 else if(client.getAddress().equals("")){
-                    Toast.makeText(CartActivity.this, R.string.cart_activity_address_required, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CartActivity.this, R.string.error_address_required, Toast.LENGTH_SHORT).show();
                 }
                 else if(client.getMainPhoneNumber().equals("")){
-                    Toast.makeText(CartActivity.this, R.string.cart_activity_main_phone_required, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CartActivity.this, R.string.error_main_phone_required, Toast.LENGTH_SHORT).show();
                 }
                 else {
                     client.setId(LoadingActivity.DB.addClient(client));

@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ import com.example.productcatalogapp.ProductDetailsActivity;
 import com.example.productcatalogapp.R;
 import com.example.productcatalogapp.classes.Cart;
 import com.example.productcatalogapp.classes.CartLine;
+import com.example.productcatalogapp.classes.CustomToast;
 import com.example.productcatalogapp.classes.Product;
 import com.example.productcatalogapp.classes.ProductImage;
 
@@ -96,72 +98,105 @@ public class MainGridViewAdapter extends RecyclerView.Adapter<MainGridViewAdapte
 
         private View.OnLongClickListener itemViewOnLongClickListener = new View.OnLongClickListener() {
 
-            private TextView textViewQuantity   = null;
+            private EditText editTextQuantity   = null;
+            private TextView textViewProductLabel   = null;
+            private TextView textViewProductPrice   = null;
+            private ImageView textViewProductImage   = null;
             private Button buttonIncrement      = null;
             private Button buttonDecrement      = null;
+            private Button buttonAdd      = null;
+            private Button buttonCancel      = null;
 
             private AlertDialog.Builder addToCartBuilder = null;
+            private AlertDialog addToCartAlert = null;
 
             private View.OnClickListener onClickListenerButtonIncrement = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    quantity = Integer.valueOf(textViewQuantity.getText().toString());
+                    quantity = Integer.valueOf(editTextQuantity.getText().toString());
                     quantity++;
-                    textViewQuantity.setText(String.valueOf(quantity));
+                    editTextQuantity.setText(String.valueOf(quantity));
                 }
             };
 
             private View.OnClickListener onClickListenerButtonDecrement = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    quantity = Integer.valueOf(textViewQuantity.getText().toString());
+                    quantity = Integer.valueOf(editTextQuantity.getText().toString());
                     if (quantity > 0){
                         quantity--;
-                        textViewQuantity.setText(String.valueOf(quantity));
+                        editTextQuantity.setText(String.valueOf(quantity));
                     }
                 }
             };
 
-            private DialogInterface.OnClickListener onClickListenerNegativeButton = new DialogInterface.OnClickListener() {
+            private View.OnClickListener onClickListenerButtonAdd = new View.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                    textViewQuantity.setText("0");
-                }
-            };
-
-            private DialogInterface.OnClickListener onClickListenerPositiveButton = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    quantity = Integer.valueOf(textViewQuantity.getText().toString());
+                public void onClick(View v) {
+                    quantity = Integer.valueOf(editTextQuantity.getText().toString());
                     if (quantity != 0){
                         LoadingActivity.cart.addCartLine(new CartLine(products.get(getAdapterPosition()), quantity));
                         CatalogActivity.buttonCart.setText(context.getString(R.string.dashboard_activity_button_cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
                     }
-                    textViewQuantity.setText("0");
+                    editTextQuantity.setText("0");
+                    addToCartAlert.dismiss();
+                    CustomToast toast = new CustomToast(context,  R.string.success_add, R.drawable.ic_success_64);
+                    toast.Make();
+                    toast.Show();
                 }
             };
+
+            private View.OnClickListener onClickListenerButtonCancel = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    quantity = Integer.valueOf(editTextQuantity.getText().toString());
+                    if (quantity > 0){
+                        addToCartAlert.cancel();
+                        editTextQuantity.setText("0");
+                    }
+                }
+            };
+
+
 
             @Override
             public boolean onLongClick(View v) {
 
-                View addToCartView      = inflater.inflate(R.layout.dialog_add_to_cart, null);
+                Product product = products.get(getAdapterPosition());
 
-                this.textViewQuantity   = addToCartView.findViewById(R.id.idTextViewQuantity);
-                this.buttonIncrement    = addToCartView.findViewById(R.id.idButtonIncrement);
-                this.buttonDecrement    = addToCartView.findViewById(R.id.idButtonDecrement);
+                View addToCartView          = inflater.inflate(R.layout.dialog_add_to_cart, null);
 
-                this.buttonIncrement.setOnClickListener(onClickListenerButtonIncrement);
-                this.buttonDecrement.setOnClickListener(onClickListenerButtonDecrement);
+                this.textViewProductLabel   = addToCartView.findViewById(R.id.idTextViewProductLabel);
+                this.textViewProductPrice   = addToCartView.findViewById(R.id.idTextViewProductPrice);
+                this.textViewProductImage   = addToCartView.findViewById(R.id.idTextViewProductImage);
+                this.editTextQuantity       = addToCartView.findViewById(R.id.idEditTextQuantity);
+                this.buttonIncrement        = addToCartView.findViewById(R.id.idButtonIncrement);
+                this.buttonDecrement        = addToCartView.findViewById(R.id.idButtonDecrement);
+                this.buttonAdd              = addToCartView.findViewById(R.id.idButtonAdd);
+                this.buttonCancel           = addToCartView.findViewById(R.id.idButtonCancel);
 
-                addToCartBuilder = new AlertDialog.Builder(itemView.getContext());
-                addToCartBuilder
-                        .setTitle(R.string.dialog_add_to_cart)
-                        .setView(addToCartView)
-                        .setPositiveButton(R.string.action_add, onClickListenerPositiveButton)
-                        .setNegativeButton(R.string.action_cancel, onClickListenerNegativeButton);
-                AlertDialog addToCartAlert = addToCartBuilder.create();
-                addToCartAlert.show();
+                this.textViewProductLabel.setText(product.getLabel());
+                this.textViewProductPrice.setText(String.valueOf(product.getPrice()));
+
+                if (product.getImages() !=  null){
+                    ProductImage image = product.getImages().get(0);
+                    File imgFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES + "/ProductCatalogApp/" + image.getPath());
+                    if(imgFile.exists()){
+                        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                        this.textViewProductImage.setImageBitmap(myBitmap);
+                    }
+                }
+
+                this.buttonIncrement.setOnClickListener(this.onClickListenerButtonIncrement);
+                this.buttonDecrement.setOnClickListener(this.onClickListenerButtonDecrement);
+                this.buttonAdd.setOnClickListener(this.onClickListenerButtonAdd);
+                this.buttonCancel.setOnClickListener(this.onClickListenerButtonCancel);
+
+                this.addToCartBuilder = new AlertDialog.Builder(itemView.getContext());
+                this.addToCartBuilder.setView(addToCartView);
+                this.addToCartAlert = this.addToCartBuilder.create();
+                this.addToCartAlert.show();
+
                 return false;
             }
         };

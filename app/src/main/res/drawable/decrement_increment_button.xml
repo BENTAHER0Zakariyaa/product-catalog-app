@@ -2,14 +2,13 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="false">
         <shape>
-            <solid android:color="@color/text_primary"/>
             <padding android:bottom="@dimen/padding_xsm" android:top="@dimen/padding_xsm" android:left="@dimen/padding_md" android:right="@dimen/padding_md" />
             <corners android:radius="@dimen/radius"/>
         </shape>
     </item>
     <item android:state_pressed="true">
         <shape>
-            <solid android:color="@color/text_primary_50"/>
+            <solid android:color="@color/text_success_50"/>
             <padding android:bottom="@dimen/padding_xsm" android:top="@dimen/padding_xsm" android:left="@dimen/padding_md" android:right="@dimen/padding_md" />
             <corners android:radius="@dimen/radius"/>
         </shape>
@@ -17,7 +16,7 @@
     <item
         android:state_enabled="false">
         <shape>
-            <solid android:color="@color/text_primary_50"/>
+            <solid android:color="@color/text_success_50"/>
             <padding android:bottom="@dimen/padding_xsm" android:top="@dimen/padding_xsm" android:left="@dimen/padding_md" android:right="@dimen/padding_md" />
             <corners android:radius="@dimen/radius"/>
         </shape>

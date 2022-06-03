@@ -95,7 +95,7 @@ public class CatalogActivity extends AppCompatActivity {
 
             this.logoutConfirmationAlertDialog = new AlertDialog.Builder(CatalogActivity.this);
             this.logoutConfirmationAlertDialog.setTitle(R.string.action_confirmation);
-            this.logoutConfirmationAlertDialog.setMessage(R.string.catalog_activity_logout_confirmation_message);
+            this.logoutConfirmationAlertDialog.setMessage(R.string.confirmation_logout_message);
             this.logoutConfirmationAlertDialog.setPositiveButton(R.string.action_accept, confirmationAlertDialogPositiveButton);
             this.logoutConfirmationAlertDialog.setNegativeButton(R.string.action_cancel, confirmationAlertDialogNegativeButton);
             this.logoutConfirmationAlert = logoutConfirmationAlertDialog.create();
@@ -111,7 +111,7 @@ public class CatalogActivity extends AppCompatActivity {
                 Intent intent = new Intent(CatalogActivity.this, CartActivity.class);
                 startActivity(intent);
             }else{
-                CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.catalog_activity_cart_is_empty, R.drawable.ic_cart_64);
+                CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.error_cart_is_empty, R.drawable.ic_cart_64);
                 toast.Make();
                 toast.Show();
             }
@@ -125,6 +125,7 @@ public class CatalogActivity extends AppCompatActivity {
                 ArrayList<Command> commands = LoadingActivity.DB.getCommands();
 
                 CatalogActivity.this.buttonUpdateCommands.setEnabled(false);
+                CatalogActivity.this.buttonUpdateCommands.setText(R.string.action_syncing);
 
                 if (commands.size() != 0 ) {
 
@@ -142,7 +143,8 @@ public class CatalogActivity extends AppCompatActivity {
                                     LoadingActivity.DB.syncCommand(commands);
                                     ArrayList<Command> commands = new ArrayList<Command>();
                                     CatalogActivity.this.buttonUpdateCommands.setEnabled(true);
-                                    CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.action_done, R.drawable.ic_success_64);
+                                    CatalogActivity.this.buttonUpdateCommands.setText(R.string.action_sync_commands);
+                                    CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.success_command_sync, R.drawable.ic_success_64);
                                     toast.Make();
                                     toast.Show();
 
@@ -165,18 +167,19 @@ public class CatalogActivity extends AppCompatActivity {
                     requestCreateCommandQueue.add(jsonObjReq);
                 }
                 else {
-                    CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.dashboard_activity_all_command_is_sync, R.drawable.ic_success_64);
+                    CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.error_command_sync, R.drawable.ic_warning);
                     toast.Make();
                     toast.Show();
                     CatalogActivity.this.buttonUpdateCommands.setEnabled(true);
-
+                    CatalogActivity.this.buttonUpdateCommands.setText(R.string.action_sync_commands);
                 }
             }
             else {
-                CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.dashboard_activity_you_are_not_connected, R.drawable.ic_warning);
+                CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.error_you_are_not_connected, R.drawable.ic_no_internet_64);
                 toast.Make();
                 toast.Show();
                 CatalogActivity.this.buttonUpdateCommands.setEnabled(true);
+                CatalogActivity.this.buttonUpdateCommands.setText(R.string.action_sync_commands);
 
             }
         }
@@ -185,13 +188,15 @@ public class CatalogActivity extends AppCompatActivity {
     private View.OnClickListener buttonUpdateOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+            CatalogActivity.this.buttonUpdate.setEnabled(false);
+            CatalogActivity.this.buttonUpdate.setText(R.string.action_syncing);
             if(LoadingActivity.isConnected()) {
-                CatalogActivity.this.buttonUpdate.setEnabled(false);
                 updateCategory("product");
             }
             else {
-                CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.dashboard_activity_you_are_not_connected, R.drawable.ic_warning);
+                CatalogActivity.this.buttonUpdate.setEnabled(true);
+                CatalogActivity.this.buttonUpdate.setText(R.string.action_sync_products);
+                CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.error_you_are_not_connected, R.drawable.ic_no_internet_64);
                 toast.Make();
                 toast.Show();
             }
@@ -210,6 +215,14 @@ public class CatalogActivity extends AppCompatActivity {
         this.buttonCart = this.findViewById(R.id.idButtonCart);
 
 
+        LoadingActivity.preferences = this.getSharedPreferences(LoadingActivity.APP_NAME, this.MODE_PRIVATE);
+
+        int userId = LoadingActivity.preferences.getInt("userId", -1);
+
+        if (LoadingActivity.currentUser == null){
+            LoadingActivity.currentUser = LoadingActivity.DB.getUser(userId);
+        }
+
         this.recyclerViewProduct = this.findViewById(R.id.idRecyclerViewProducts);
 
         // SET EVENTS
@@ -222,13 +235,6 @@ public class CatalogActivity extends AppCompatActivity {
 
         // IF OFFLINE DO
         this.products = LoadingActivity.DB.getProducts();
-        this.products.add(this.products.get(0));
-        this.products.add(this.products.get(1));
-        this.products.add(this.products.get(2));
-        this.products.add(this.products.get(1));
-        this.products.add(this.products.get(3));
-        this.products.add(this.products.get(0));
-        this.products.add(this.products.get(2));
         this.fillGrid();
 
         this.buttonCart.setText(getString(R.string.dashboard_activity_button_cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
@@ -252,13 +258,13 @@ public class CatalogActivity extends AppCompatActivity {
     void updateCategory(String type){
         RequestQueue requestCategoriesQueue = Volley.newRequestQueue(CatalogActivity.this);
         String URL = APIHelper.API_URL + "/categories?type="+type;
-        JsonArrayRequest requestCategories = new JsonArrayRequest(Request.Method.GET, URL, null, new Response.Listener<JSONArray>(){
+        JsonArrayRequest requestCategories = new JsonArrayRequest(Request.Method.GET, URL, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
 
                 categories = new ArrayList<Category>();
 
-                for (int i=0; i < response.length(); i++) {
+                for (int i = 0; i < response.length(); i++) {
                     try {
                         JSONObject category = response.getJSONObject(i);
 
@@ -273,12 +279,23 @@ public class CatalogActivity extends AppCompatActivity {
                         long isAdded = LoadingActivity.DB.addCategory(c);
 
                     } catch (JSONException e) {
+
                         e.printStackTrace();
                     }
                 }
                 updateProduct();
             }
-        }, null){
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.error_from_server, R.drawable.ic_warning);
+                toast.Make();
+                toast.Show();
+                CatalogActivity.this.buttonUpdateCommands.setEnabled(true);
+                CatalogActivity.this.buttonUpdateCommands.setText(R.string.action_sync_commands);
+
+            }
+        }){
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap header = new HashMap();
@@ -292,12 +309,12 @@ public class CatalogActivity extends AppCompatActivity {
     void updateProduct(){
         RequestQueue requestProductsQueue = Volley.newRequestQueue(CatalogActivity.this);
         String URL = APIHelper.CUSTOM_API_URL+"?page=products";
-        JsonArrayRequest requestProducts = new JsonArrayRequest(Request.Method.GET, URL, null, new Response.Listener<JSONArray>(){
+        JsonArrayRequest requestProducts = new JsonArrayRequest(Request.Method.GET, URL, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
 
                 products = new ArrayList<Product>();
-                for (int i=0; i < response.length(); i++) {
+                for (int i = 0; i < response.length(); i++) {
                     try {
 
                         JSONObject product = response.getJSONObject(i);
@@ -307,7 +324,7 @@ public class CatalogActivity extends AppCompatActivity {
                         p.setId(product.getInt("id"));
                         p.setLabel(product.getString("label"));
                         p.setDescription(product.getString("description"));
-                        p.setPrice((float)product.getDouble("price"));
+                        p.setPrice((float) product.getDouble("price"));
 
                         Category c = new Category();
 
@@ -319,7 +336,7 @@ public class CatalogActivity extends AppCompatActivity {
 
                         JSONArray images = product.getJSONArray("images");
 
-                        for (int j = 0; j < images.length() ; j++){
+                        for (int j = 0; j < images.length(); j++) {
 
                             ProductImage image = new ProductImage();
 
@@ -327,11 +344,11 @@ public class CatalogActivity extends AppCompatActivity {
                             image.setName(images.getJSONObject(j).getString("label"));
                             image.setFileName(images.getJSONObject(j).getString("filename"));
                             image.setFilePath(images.getJSONObject(j).getString("filepath"));
-                            image.setPath("/"+image.getFilePath()+"/"+image.getFileName());
+                            image.setPath("/" + image.getFilePath() + "/" + image.getFileName());
                             image.setProductId(p.getId());
 
                             p.addImage(image);
-                            new DownloadsImage().execute(APIHelper.DOCUMENTS_PATH+image.getPath(), "/"+image.getFilePath(), "/"+image.getFileName());
+                            new DownloadsImage().execute(APIHelper.DOCUMENTS_PATH + image.getPath(), "/" + image.getFilePath(), "/" + image.getFileName());
                         }
 
                         products.add(p);
@@ -342,15 +359,23 @@ public class CatalogActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-
                 fillGrid();
-                CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.action_done, R.drawable.ic_success_64);
+                CustomToast toast = new CustomToast(CatalogActivity.this, R.string.action_done, R.drawable.ic_success_64);
                 toast.Make();
                 toast.Show();
-
                 CatalogActivity.this.buttonUpdate.setEnabled(true);
+                CatalogActivity.this.buttonUpdate.setText(R.string.action_sync_products);
             }
-        }, null){
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                CustomToast toast = new CustomToast(CatalogActivity.this,  R.string.error_from_server, R.drawable.ic_warning);
+                toast.Make();
+                toast.Show();
+                CatalogActivity.this.buttonUpdateCommands.setEnabled(true);
+                CatalogActivity.this.buttonUpdateCommands.setText(R.string.action_sync_commands);
+            }
+        }){
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap header = new HashMap();
