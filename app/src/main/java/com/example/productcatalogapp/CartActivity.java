@@ -73,7 +73,7 @@ public class CartActivity extends AppCompatActivity {
                     client.setId(LoadingActivity.DB.addClient(client));
                     LoadingActivity.DB.addCommand(LoadingActivity.cart.createCommand(client));
                     recyclerViewCartAdapter.notifyDataSetChanged();
-                    CatalogActivity.buttonCart.setText(getString(R.string.dashboard_activity_button_cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
+                    CatalogActivity.buttonCart.setText(getString(R.string.cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
                     createCommandAlert.dismiss();
                 }
             }
@@ -110,11 +110,11 @@ public class CartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cart);
 
         this.recyclerViewCardProducts = this.findViewById(R.id.idRecyclerViewCardProducts);
-        this.buttonBack = this.findViewById(R.id.idButtonBack);
-        this.buttonCreateCommand = this.findViewById(R.id.idButtonCreateCommand);
+//        this.buttonBack = this.findViewById(R.id.idButtonBack);
+//        this.buttonCreateCommand = this.findViewById(R.id.idButtonCreateCommand);
 
-        this.buttonBack.setOnClickListener(onClickListenerButtonBack);
-        this.buttonCreateCommand.setOnClickListener(onClickListenerButtonCreateCommand);
+//        this.buttonBack.setOnClickListener(onClickListenerButtonBack);
+//        this.buttonCreateCommand.setOnClickListener(onClickListenerButtonCreateCommand);
 
     }
 
@@ -122,7 +122,7 @@ public class CartActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         recyclerViewCartAdapter = new RecyclerViewCartAdapter(this);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
         recyclerViewCardProducts.setLayoutManager(gridLayoutManager);
         recyclerViewCardProducts.setAdapter(recyclerViewCartAdapter);
     }

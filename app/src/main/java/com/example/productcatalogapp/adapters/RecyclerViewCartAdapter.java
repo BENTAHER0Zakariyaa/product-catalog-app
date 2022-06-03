@@ -1,35 +1,36 @@
 package com.example.productcatalogapp.adapters;
 
+import static android.view.ViewGroup.*;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.productcatalogapp.CartActivity;
 import com.example.productcatalogapp.CatalogActivity;
 import com.example.productcatalogapp.LoadingActivity;
 import com.example.productcatalogapp.R;
-import com.example.productcatalogapp.classes.Cart;
 import com.example.productcatalogapp.classes.CartLine;
+import com.example.productcatalogapp.classes.DialogConfirmation;
 import com.example.productcatalogapp.classes.ProductImage;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCartAdapter.ViewHolder> {
 
@@ -54,7 +55,7 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         CartLine cartLine = LoadingActivity.cart.getCartLine(i);
 
-        viewHolder.textViewTotal.setText(String.valueOf(cartLine.getTotalPrice())+" Dh");
+        viewHolder.textViewTotal.setText(String.valueOf(cartLine.getTotalPrice()));
         viewHolder.textViewLabel.setText(cartLine.getProduct().getLabel());
         viewHolder.editViewQuantity.setText(String.valueOf(cartLine.getQuantity()));
         if (cartLine.getProduct().getImages() != null){
@@ -80,7 +81,8 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
         private EditText editViewQuantity = null;
         private Button buttonIncrement = null;
         private TextView textViewTotal = null;
-        private Button buttonDelete = null;
+        private ImageButton imageButtonDelete = null;
+        private LinearLayout linearLayoutDelete = null;
 
 
         private View.OnClickListener onClickListenerButtonIncrement = new View.OnClickListener() {
@@ -88,8 +90,8 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
             public void onClick(View v) {
                 LoadingActivity.cart.getCartLine(getAdapterPosition()).IncrementQuantity();
                 editViewQuantity.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getQuantity()));
-                textViewTotal.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getTotalPrice())+" Dh");
-                CatalogActivity.buttonCart.setText(context.getString(R.string.dashboard_activity_button_cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
+                textViewTotal.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getTotalPrice()));
+                CatalogActivity.buttonCart.setText(context.getString(R.string.cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
             }
         };
 
@@ -100,61 +102,74 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
                     LoadingActivity.cart.getCartLine(getAdapterPosition()).DecrementQuantity();
                     editViewQuantity.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getQuantity()));
                     textViewTotal.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getTotalPrice()));
-                    CatalogActivity.buttonCart.setText(context.getString(R.string.dashboard_activity_button_cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
+                    CatalogActivity.buttonCart.setText(context.getString(R.string.cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
                 }
             }
         };
 
         private View.OnClickListener onClickListenerButtonDelete = new View.OnClickListener() {
 
-            AlertDialog.Builder deleteCommandLineAlertDialog = null;
+            DialogConfirmation deleteCommandLineDialogConfirmation = null;
             AlertDialog deleteCommandLineAlert = null;
 
-            DialogInterface.OnClickListener deleteCommandLineAlertDialogPositiveButton = new DialogInterface.OnClickListener() {
+            View.OnClickListener deleteCommandLineDialogConfirmationAcceptButton = new View.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
+                public void onClick(View v) {
                     LoadingActivity.cart.removeCartLine(LoadingActivity.cart.getCartLine(getAdapterPosition()));
                     CartActivity.recyclerViewCartAdapter.notifyDataSetChanged();
-                    CatalogActivity.buttonCart.setText(context.getString(R.string.dashboard_activity_button_cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
-                    deleteCommandLineAlert.dismiss();
+                    CatalogActivity.buttonCart.setText(context.getString(R.string.cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
+                    deleteCommandLineDialogConfirmation.getAlertDialog().dismiss();
                 }
             };
 
-            DialogInterface.OnClickListener deleteCommandLineAlertDialogNegativeButton = new DialogInterface.OnClickListener() {
+            View.OnClickListener deleteCommandLineDialogConfirmationCancelButton = new View.OnClickListener() {
+
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    deleteCommandLineAlert.cancel();
+                public void onClick(View v) {
+                    deleteCommandLineDialogConfirmation.getAlertDialog().cancel();
                 }
             };
 
             @Override
             public void onClick(View v) {
-                this.deleteCommandLineAlertDialog = new AlertDialog.Builder(context);
-                this.deleteCommandLineAlertDialog.setTitle(R.string.action_confirmation);
-                this.deleteCommandLineAlertDialog.setMessage(R.string.confirmation_delete_message);
-                this.deleteCommandLineAlertDialog.setPositiveButton(R.string.action_delete, deleteCommandLineAlertDialogPositiveButton);
-                this.deleteCommandLineAlertDialog.setNegativeButton(R.string.action_cancel, deleteCommandLineAlertDialogNegativeButton);
-                this.deleteCommandLineAlert = deleteCommandLineAlertDialog.create();
-                this.deleteCommandLineAlert.show();
-
+                this.deleteCommandLineDialogConfirmation = new DialogConfirmation(context, R.string.confirmation_delete_message, R.drawable.ic_warning, deleteCommandLineDialogConfirmationAcceptButton, deleteCommandLineDialogConfirmationCancelButton);
+                this.deleteCommandLineDialogConfirmation.Create();
+                this.deleteCommandLineDialogConfirmation.Show();
             }
         };
 
+        private View.OnLongClickListener deleteContainerOnLongClickListener = new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                ViewGroup.LayoutParams params = v.findViewById(R.id.idLinearLayoutDelete).getLayoutParams();
+                if (params.width == 0){
+                    params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                }else{
 
+                    params.width = 0;
+                }
+                v.findViewById(R.id.idLinearLayoutDelete).requestLayout();
+                return false;
+            }
+        };
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+
             this.imageViewProduct = itemView.findViewById(R.id.idImageViewProduct);
             this.textViewLabel = itemView.findViewById(R.id.idTextViewLabel);
             this.buttonDecrement = itemView.findViewById(R.id.idButtonDecrement);
-            this.editViewQuantity = itemView.findViewById(R.id.idEditViewQuantity);
+            this.editViewQuantity = itemView.findViewById(R.id.idEditTextQuantity);
             this.buttonIncrement = itemView.findViewById(R.id.idButtonIncrement);
             this.textViewTotal = itemView.findViewById(R.id.idTextViewTotal);
-            this.buttonDelete = itemView.findViewById(R.id.idButtonDelete);
+            this.imageButtonDelete = itemView.findViewById(R.id.idButtonDelete);
+            this.linearLayoutDelete = itemView.findViewById(R.id.idLinearLayoutDelete);
 
             buttonIncrement.setOnClickListener(onClickListenerButtonIncrement);
             buttonDecrement.setOnClickListener(onClickListenerButtonDecrement);
-            buttonDelete.setOnClickListener(onClickListenerButtonDelete);
+            imageButtonDelete.setOnClickListener(onClickListenerButtonDelete);
+
+            itemView.setOnLongClickListener(this.deleteContainerOnLongClickListener);
 
         }
     }

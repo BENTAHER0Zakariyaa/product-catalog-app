@@ -1,5 +1,6 @@
 package com.example.productcatalogapp;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -34,6 +35,7 @@ import com.example.productcatalogapp.adapters.MainGridViewAdapter;
 import com.example.productcatalogapp.classes.Category;
 import com.example.productcatalogapp.classes.Command;
 import com.example.productcatalogapp.classes.CustomToast;
+import com.example.productcatalogapp.classes.DialogConfirmation;
 import com.example.productcatalogapp.classes.Product;
 import com.example.productcatalogapp.classes.ProductImage;
 import com.google.gson.Gson;
@@ -69,12 +71,13 @@ public class CatalogActivity extends AppCompatActivity {
 
     private View.OnClickListener buttonLogoutOnClickListener = new View.OnClickListener() {
 
-        AlertDialog.Builder logoutConfirmationAlertDialog = null;
-        AlertDialog logoutConfirmationAlert = null;
+        DialogConfirmation logoutDialogConfirmation = null;
 
-        DialogInterface.OnClickListener confirmationAlertDialogPositiveButton = new DialogInterface.OnClickListener() {
+        View.OnClickListener logoutDialogConfirmationAcceptButton = new View.OnClickListener() {
+
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(View v) {
+                logoutDialogConfirmation.getAlertDialog().cancel();
                 LoadingActivity.preferences.edit().putBoolean("isSessionSaved", false).putInt("userId", -1).apply();
                 Intent intent = new Intent();
                 setResult(LoadingActivity.CATALOG_ACTIVITY_START_CODE, intent);
@@ -83,24 +86,19 @@ public class CatalogActivity extends AppCompatActivity {
             }
         };
 
-        DialogInterface.OnClickListener confirmationAlertDialogNegativeButton = new DialogInterface.OnClickListener() {
+        View.OnClickListener logoutDialogConfirmationCancelButton = new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                logoutConfirmationAlert.dismiss();
+            public void onClick(View v) {
+                logoutDialogConfirmation.getAlertDialog().cancel();
             }
         };
 
         @Override
         public void onClick(View v) {
 
-            this.logoutConfirmationAlertDialog = new AlertDialog.Builder(CatalogActivity.this);
-            this.logoutConfirmationAlertDialog.setTitle(R.string.action_confirmation);
-            this.logoutConfirmationAlertDialog.setMessage(R.string.confirmation_logout_message);
-            this.logoutConfirmationAlertDialog.setPositiveButton(R.string.action_accept, confirmationAlertDialogPositiveButton);
-            this.logoutConfirmationAlertDialog.setNegativeButton(R.string.action_cancel, confirmationAlertDialogNegativeButton);
-            this.logoutConfirmationAlert = logoutConfirmationAlertDialog.create();
-            this.logoutConfirmationAlert.show();
-
+            this.logoutDialogConfirmation = new DialogConfirmation(CatalogActivity.this, R.string.confirmation_logout_message, R.drawable.ic_warning, logoutDialogConfirmationAcceptButton, logoutDialogConfirmationCancelButton);
+            this.logoutDialogConfirmation.Create();
+            this.logoutDialogConfirmation.Show();
         }
     };
 
@@ -237,7 +235,7 @@ public class CatalogActivity extends AppCompatActivity {
         this.products = LoadingActivity.DB.getProducts();
         this.fillGrid();
 
-        this.buttonCart.setText(getString(R.string.dashboard_activity_button_cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
+        this.buttonCart.setText(getString(R.string.cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
     }
 
     @Override

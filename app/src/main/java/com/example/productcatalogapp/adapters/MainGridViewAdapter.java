@@ -136,7 +136,7 @@ public class MainGridViewAdapter extends RecyclerView.Adapter<MainGridViewAdapte
                     quantity = Integer.valueOf(editTextQuantity.getText().toString());
                     if (quantity != 0){
                         LoadingActivity.cart.addCartLine(new CartLine(products.get(getAdapterPosition()), quantity));
-                        CatalogActivity.buttonCart.setText(context.getString(R.string.dashboard_activity_button_cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
+                        CatalogActivity.buttonCart.setText(context.getString(R.string.cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
                     }
                     editTextQuantity.setText("0");
                     addToCartAlert.dismiss();

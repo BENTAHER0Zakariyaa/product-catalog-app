@@ -2,18 +2,14 @@
 
     <string name="app_name">Product Catalog App</string>
 
-    <string name="main_activity_permission_message">Our application need Permission to access</string>
-    <string name="main_activity_hint_username_input">User name</string>
-    <string name="main_activity_hint_password_input">Password</string>
-    <string name="main_activity_text_save_session_checkbox">Save your session</string>
-    <string name="main_activity_text_login_button">LOGIN</string>
-    <string name="main_activity_error_username_required">User name is required</string>
-    <string name="main_activity_error_password_required">Password is required</string>
-    <string name="main_activity_error_invalid_fields">Invalid fields</string>
+    <string name="permission_message">Our application need Permission to access</string>
 
-    <string name="dashboard_activity_button_cart">Cart (%1$d, %2$.2f Dh)</string>
+    <string name="hint_username_input">User name</string>
+    <string name="hint_password_input">Password</string>
 
+    <string name="text_save_session">Save your session</string>
 
+    <string name="cart">Cart (%1$d, %2$.2f Dh)</string>
 
     <string name="dialog_client_info_hint_name">Enter client name</string>
     <string name="dialog_client_info_hint_address">Enter client address</string>
@@ -38,6 +34,12 @@
     <string name="error_town_required">Client town required</string>
     <string name="error_address_required">Client address required</string>
     <string name="error_main_phone_required">Client main phone number required</string>
+    <string name="error_username_required">User name is required</string>
+    <string name="error_password_required">Password is required</string>
+    <string name="error_invalid_fields">Invalid fields</string>
+
+
+
 
     <string name="action_add">Add</string>
     <string name="action_cancel">Cancel</string>
@@ -53,6 +55,7 @@
     <string name="action_syncing">We are syncing ...</string>
     <string name="action_sync_commands">Sync your commands</string>
     <string name="action_sync_products">Sync your products</string>
-    <string name="action_logout">LOGOUT</string>
+    <string name="action_logout">Logout</string>
+    <string name="action_login">Login</string>
 
 </resources>

@@ -9,24 +9,28 @@
         <entry key="app/src/main/res/drawable/catalog_layout_grid_item.xml" value="0.245" />
         <entry key="app/src/main/res/drawable/count_input.xml" value="0.203" />
         <entry key="app/src/main/res/drawable/decrement_increment_button.xml" value="0.2445" />
+        <entry key="app/src/main/res/drawable/delete_button.xml" value="0.253" />
+        <entry key="app/src/main/res/drawable/ic_delete_64.xml" value="0.253" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_warning.xml" value="0.2445" />
         <entry key="app/src/main/res/drawable/login_layout_button.xml" value="0.361" />
         <entry key="app/src/main/res/drawable/login_layout_card.xml" value="0.283" />
         <entry key="app/src/main/res/drawable/login_layout_input.xml" value="0.314" />
         <entry key="app/src/main/res/drawable/login_layout_toast.xml" value="0.2935" />
+        <entry key="app/src/main/res/drawable/toast_layout.xml" value="0.2215" />
         <entry key="app/src/main/res/layout/activity_cart.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_catalog.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_dash_board.xml" value="0.13046875" />
         <entry key="app/src/main/res/layout/activity_dashboard.xml" value="0.1296875" />
         <entry key="app/src/main/res/layout/activity_dashboard2.xml" value="0.12994791666666666" />
         <entry key="app/src/main/res/layout/activity_loading.xml" value="0.18046875" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.14" />
         <entry key="app/src/main/res/layout/activity_product_details.xml" value="0.15" />
         <entry key="app/src/main/res/layout/custem_toast.xml" value="0.25" />
         <entry key="app/src/main/res/layout/dialog_add_to_cart.xml" value="0.18" />
         <entry key="app/src/main/res/layout/dialog_client_info.xml" value="0.22" />
-        <entry key="app/src/main/res/layout/item_cart_item.xml" value="0.3832236842105263" />
+        <entry key="app/src/main/res/layout/dialog_confermation.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/item_cart_item.xml" value="0.16" />
         <entry key="app/src/main/res/layout/item_list_view_product_image.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_main_grid.xml" value="0.22" />
       </map>

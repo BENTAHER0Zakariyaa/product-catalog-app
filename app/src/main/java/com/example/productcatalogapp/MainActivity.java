@@ -74,13 +74,13 @@ public class MainActivity extends AppCompatActivity {
                 LoadingActivity.currentUser = new User(MainActivity.this.editTextUserName.getText().toString(), MainActivity.this.editTextPassword.getText().toString());
                 LoadingActivity.currentUser.setConnected(LoadingActivity.isConnected());
                 if (LoadingActivity.currentUser.getUsername().equals("")) {
-                    CustomToast toast = new CustomToast(MainActivity.this,  R.string.main_activity_error_username_required, R.drawable.ic_warning);
+                    CustomToast toast = new CustomToast(MainActivity.this,  R.string.error_username_required, R.drawable.ic_warning);
                     toast.Make();
                     toast.Show();
                     MainActivity.this.buttonLogin.setEnabled(true);
                 }
                 else if (LoadingActivity.currentUser.getPassword().equals("")) {
-                    CustomToast toast = new CustomToast(MainActivity.this,  R.string.main_activity_error_password_required, R.drawable.ic_warning);
+                    CustomToast toast = new CustomToast(MainActivity.this,  R.string.error_password_required, R.drawable.ic_warning);
                     toast.Make();
                     toast.Show();
                     MainActivity.this.buttonLogin.setEnabled(true);
@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainActivity.this, R.string.main_activity_error_invalid_fields, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.error_invalid_fields, Toast.LENGTH_SHORT).show();
                 MainActivity.this.buttonLogin.setEnabled(true);
             }
         });
@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
             this.startCatalogActivity();
             this.saveSession(LoadingActivity.currentUser.getId());
         } else {
-            Toast.makeText(MainActivity.this, R.string.main_activity_error_invalid_fields, Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, R.string.error_invalid_fields, Toast.LENGTH_SHORT).show();
             this.buttonLogin.setEnabled(true);
         }
     }
