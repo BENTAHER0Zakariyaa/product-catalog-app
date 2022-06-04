@@ -57,5 +57,9 @@
     <string name="action_sync_products">Sync your products</string>
     <string name="action_logout">Logout</string>
     <string name="action_login">Login</string>
+    <string name="text_description">Description : </string>
+    <string name="text_total">Total : </string>
+    <string name="text_items_count">%1$d Items</string>
+
 
 </resources>

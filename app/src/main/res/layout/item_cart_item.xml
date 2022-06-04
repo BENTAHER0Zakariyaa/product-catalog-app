@@ -8,9 +8,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_sm"
-        android:orientation="horizontal">
-
+        android:orientation="horizontal"
+        android:layout_marginBottom="@dimen/margin_sm">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,39 +27,47 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-                    <TextView
-                        android:id="@+id/idTextViewLabel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="10dp"
-                        android:paddingBottom="@dimen/padding_sm"
-                        android:fontFamily="@font/roboto_light"
-                        android:textColor="@color/text_primary"/>
+                    android:orientation="horizontal">
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="match_parent"
+                        android:layout_weight="3"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
                         <TextView
-                            android:id="@+id/idTextViewTotal"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/idTextViewLabel"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textSize="12dp"
-                            android:text="200"
-                            android:fontFamily="@font/roboto_black"
+                            android:textSize="10dp"
+                            android:paddingBottom="@dimen/padding_sm"
+                            android:fontFamily="@font/roboto_light"
                             android:textColor="@color/text_primary"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="12dp"
-                            android:text=" Dh"
-                            android:fontFamily="@font/roboto_black"
-                            android:textColor="@color/text_success"
-                            />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:id="@+id/idTextViewTotal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="12dp"
+                                android:text="200"
+                                android:fontFamily="@font/roboto_black"
+                                android:textColor="@color/text_primary"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="12dp"
+                                android:text=" Dh"
+                                android:fontFamily="@font/roboto_black"
+                                android:textColor="@color/text_success"
+                                />
+                        </LinearLayout>
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:gravity="bottom">
+                        android:layout_weight="1"
+                        android:gravity="center">
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -107,8 +114,8 @@
 
                     <ImageView
                         android:id="@+id/idImageViewProduct"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         />
                 </LinearLayout>
             </LinearLayout>
@@ -118,7 +125,7 @@
             android:id="@+id/idLinearLayoutDelete"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="8"
+            android:layout_weight="1"
             android:gravity="center"
             android:layout_marginStart="@dimen/margin_sm"
             >
@@ -129,8 +136,8 @@
                 android:textColor="@color/bg_secondary"
                 android:fontFamily="@font/roboto_bold"
                 android:background="@drawable/delete_button"
-                android:padding="@dimen/padding_md"
-                android:elevation="8dp"
+                android:padding="@dimen/padding_sm"
+                android:elevation="2dp"
                 android:src="@drawable/ic_delete_64"/>
         </LinearLayout>
 

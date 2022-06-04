@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,7 +27,16 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private TextView textViewLabel = null;
     private TextView textViewPrice = null;
     private TextView textViewDescription = null;
+    private TextView textViewCategory = null;
+    private Button buttonBack = null;
     private RecyclerView recyclerViewProductImages = null;
+
+    private View.OnClickListener onClickListenerButtonBack = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            finish();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,20 +46,25 @@ public class ProductDetailsActivity extends AppCompatActivity {
         this.textViewDescription        = this.findViewById(R.id.idTextViewDescription);
         this.textViewLabel              = this.findViewById(R.id.idTextViewLabel);
         this.textViewPrice              = this.findViewById(R.id.idTextViewPrice);
+        this.textViewCategory  = this.findViewById(R.id.idTextViewCategory);
         this.recyclerViewProductImages  = this.findViewById(R.id.idRecyclerViewProductImages);
+
+        this.buttonBack = this.findViewById(R.id.idButtonBack);
+        this.buttonBack.setOnClickListener(onClickListenerButtonBack);
 
         Bundle bundle = getIntent().getExtras();
         int productId = bundle.getInt("productId");
 
         Product product = LoadingActivity.DB.getProduct(productId);
 
-        this.textViewPrice.setText(String.valueOf(product.getPrice()) + " DH");
+        this.textViewPrice.setText(String.valueOf(product.getPrice()));
         this.textViewDescription.setText(product.getDescription());
         this.textViewLabel.setText(product.getLabel());
+        this.textViewCategory.setText(product.getCategory().getName());
 
         if (product.getImages() !=  null){
             ListProductImagesAdapter listProductImagesAdapter = new ListProductImagesAdapter(this, product.getImages());
-            GridLayoutManager listProductImagesLayoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
+            GridLayoutManager listProductImagesLayoutManager = new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false);
 
             this.recyclerViewProductImages.setLayoutManager(listProductImagesLayoutManager);
             this.recyclerViewProductImages.setAdapter(listProductImagesAdapter);

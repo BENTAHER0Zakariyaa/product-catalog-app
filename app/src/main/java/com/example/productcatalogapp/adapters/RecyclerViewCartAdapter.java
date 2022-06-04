@@ -92,6 +92,7 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
                 editViewQuantity.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getQuantity()));
                 textViewTotal.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getTotalPrice()));
                 CatalogActivity.buttonCart.setText(context.getString(R.string.cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
+                CartActivity.updateCart();
             }
         };
 
@@ -103,6 +104,7 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
                     editViewQuantity.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getQuantity()));
                     textViewTotal.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getTotalPrice()));
                     CatalogActivity.buttonCart.setText(context.getString(R.string.cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
+                    CartActivity.updateCart();
                 }
             }
         };
@@ -118,6 +120,7 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
                     LoadingActivity.cart.removeCartLine(LoadingActivity.cart.getCartLine(getAdapterPosition()));
                     CartActivity.recyclerViewCartAdapter.notifyDataSetChanged();
                     CatalogActivity.buttonCart.setText(context.getString(R.string.cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
+                    CartActivity.updateCart();
                     deleteCommandLineDialogConfirmation.getAlertDialog().dismiss();
                 }
             };
@@ -142,10 +145,10 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
             @Override
             public boolean onLongClick(View v) {
                 ViewGroup.LayoutParams params = v.findViewById(R.id.idLinearLayoutDelete).getLayoutParams();
+                final float scale = context.getResources().getDisplayMetrics().density;
                 if (params.width == 0){
-                    params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                    params.width = (int) (105 * scale + 0.5f);
                 }else{
-
                     params.width = 0;
                 }
                 v.findViewById(R.id.idLinearLayoutDelete).requestLayout();
