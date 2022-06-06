@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_primary"
+    android:padding="@dimen/padding_sm"
+    tools:context=".CreateCommandActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/margin_sm">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                >
+                <ImageButton
+                    android:id="@+id/idImageButtonBack"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/cancel_button"
+                    android:textColor="@color/bg_secondary"
+                    android:src="@drawable/ic_arrow_back_64"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="end">
+                <ImageButton
+                    android:id="@+id/idImageButtonAddClient"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/login_layout_button"
+                    android:textColor="@color/bg_secondary"
+                    android:src="@drawable/ic_person_add_24"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/idRecyclerViewClients"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:layout_marginBottom="@dimen/margin_sm"/>
+    </LinearLayout>
+</LinearLayout>

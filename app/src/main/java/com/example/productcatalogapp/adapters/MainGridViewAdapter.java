@@ -2,32 +2,24 @@ package com.example.productcatalogapp.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.productcatalogapp.CartActivity;
 import com.example.productcatalogapp.CatalogActivity;
 import com.example.productcatalogapp.LoadingActivity;
 import com.example.productcatalogapp.ProductDetailsActivity;
 import com.example.productcatalogapp.R;
-import com.example.productcatalogapp.classes.Cart;
 import com.example.productcatalogapp.classes.CartLine;
 import com.example.productcatalogapp.classes.CustomToast;
 import com.example.productcatalogapp.classes.Product;
@@ -35,7 +27,6 @@ import com.example.productcatalogapp.classes.ProductImage;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainGridViewAdapter extends RecyclerView.Adapter<MainGridViewAdapter.ViewHolder> {
 
@@ -52,7 +43,7 @@ public class MainGridViewAdapter extends RecyclerView.Adapter<MainGridViewAdapte
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
-        View view = inflater.inflate(R.layout.item_main_grid, parent, false);
+        View view = inflater.inflate(R.layout.item_product, parent, false);
         return new ViewHolder(view);
     }
 
@@ -197,7 +188,7 @@ public class MainGridViewAdapter extends RecyclerView.Adapter<MainGridViewAdapte
                 this.addToCartAlert = this.addToCartBuilder.create();
                 this.addToCartAlert.show();
 
-                return false;
+                return true;
             }
         };
 

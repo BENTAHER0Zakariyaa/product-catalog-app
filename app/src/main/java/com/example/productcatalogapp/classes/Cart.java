@@ -78,7 +78,7 @@ public class Cart {
             commandLine.setCommand(command);
             command.commandLines.add(commandLine);
         }
-        this.init();
+
         return command;
 
     }

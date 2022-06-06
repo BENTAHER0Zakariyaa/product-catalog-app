@@ -38,8 +38,10 @@
                             android:id="@+id/idTextViewLabel"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textSize="10dp"
+                            android:textSize="14dp"
                             android:paddingBottom="@dimen/padding_sm"
+                            android:ellipsize="end"
+                            android:maxLines="1"
                             android:fontFamily="@font/roboto_light"
                             android:textColor="@color/text_primary"/>
                         <LinearLayout
@@ -82,8 +84,8 @@
                                 android:text="-"
                                 android:textSize="14dp"
                                 android:background="@drawable/decrement_increment_button"/>
-                            <EditText
-                                android:id="@+id/idEditTextQuantity"
+                            <TextView
+                                android:id="@+id/idTextViewQuantity"
                                 android:layout_width="100dp"
                                 android:layout_height="match_parent"
                                 android:layout_marginHorizontal="@dimen/margin_sm"
@@ -114,9 +116,8 @@
 
                     <ImageView
                         android:id="@+id/idImageViewProduct"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        />
+                        android:layout_width="50dp"
+                        android:layout_height="50dp" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

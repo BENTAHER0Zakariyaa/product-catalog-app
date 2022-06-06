@@ -8,13 +8,14 @@
     android:orientation="vertical"
     android:background="@color/bg_primary"
     android:padding="@dimen/padding_sm">
-        <Button
-            android:id="@+id/idButtonBack"
-            android:layout_width="wrap_content"
+        <ImageButton
+            android:id="@+id/idImageButtonBack"
+            android:layout_width="32dp"
             android:layout_height="32dp"
-            android:text="@string/action_back"
             android:background="@drawable/cancel_button"
-            android:textColor="@color/bg_secondary"/>
+            android:textColor="@color/bg_secondary"
+            android:layout_marginBottom="@dimen/padding_sm"
+            android:src="@drawable/ic_arrow_back_64"/>
         <android.support.v7.widget.RecyclerView
             android:id="@+id/idRecyclerViewCardProducts"
             android:layout_width="match_parent"

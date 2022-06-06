@@ -463,11 +463,35 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return client;
     }
 
+    public ArrayList<Client> getClients() {
+        ArrayList<Client> clients = new ArrayList<Client>();
+
+        String selectClientQuery = " SELECT * FROM " + TABLE_CLIENTS;
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor selectClientCursor = db.rawQuery(selectClientQuery, null);
+        Log.d("COUNT", "getClients: " +selectClientCursor.getCount());
+        if (selectClientCursor.moveToFirst())
+        {
+           do {
+               Client client = new Client();
+
+               client.setId(selectClientCursor.getInt(0));
+               client.setName(selectClientCursor.getString(1));
+               client.setEmail(selectClientCursor.getString(2));
+               client.setTown(selectClientCursor.getString(3));
+               client.setAddress(selectClientCursor.getString(4));
+               client.setMainPhoneNumber(selectClientCursor.getString(5));
+               client.setSecondPhoneNumber(selectClientCursor.getString(6));
+
+               clients.add(client);
+           } while (selectClientCursor.moveToNext());
+        }
+        db.close();
+        return clients;
+    }
+
     public int addClient(Client client){
         int clientId = isClientExist(client.getMainPhoneNumber());
-        Log.d("DATABASE", "addClient: " + client.toString());
-        Log.d("DATABASE", "addClient: BEFORE" + clientId);
-
         if (clientId == -1){
 
             SQLiteDatabase db = this.getReadableDatabase();
@@ -479,9 +503,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             cv.put(KEY_CLIENT_MAIN_PHONE_NUMBER, client.getMainPhoneNumber());
             cv.put(KEY_CLIENT_SECOND_PHONE_NUMBER, client.getSecondPhoneNumber());
             clientId = (int)db.insert(TABLE_CLIENTS, null, cv);
-
-            Log.d("DATABASE", "addClient: AFTER INSERT" + clientId);
-
             db.close();
             return clientId;
         }
@@ -568,5 +589,4 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         db.close();
     }
-
 }

@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="app_name">Product Catalog App</string>
+    <string name="app_name">Offline Product Catalog</string>
 
     <string name="permission_message">Our application need Permission to access</string>
 
@@ -11,13 +11,12 @@
 
     <string name="cart">Cart (%1$d, %2$.2f Dh)</string>
 
-    <string name="dialog_client_info_hint_name">Enter client name</string>
-    <string name="dialog_client_info_hint_address">Enter client address</string>
-    <string name="dialog_client_info_hint_main_phone_number">Enter client main phone number</string>
-    <string name="dialog_client_info_hint_second_phone_number">Enter client second phone number</string>
-    <string name="dialog_client_info_button_create_command">create command</string>
-    <string name="dialog_client_info_hint_email">Enter client email</string>
-    <string name="dialog_client_info_hint_town">Enter client town</string>
+    <string name="hint_client_name">Client name</string>
+    <string name="hint_client_address">Client address</string>
+    <string name="hint_client_main_phone_number">Client main phone number</string>
+    <string name="hint_client_second_phone_number">Client second phone number</string>
+    <string name="hint_client_email">Client email</string>
+    <string name="hint_client_town">Client town</string>
 
 
     <string name="confirmation_logout_message">Are you sure you want to log out ? </string>
@@ -39,8 +38,6 @@
     <string name="error_invalid_fields">Invalid fields</string>
 
 
-
-
     <string name="action_add">Add</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_back">Back</string>
@@ -60,6 +57,7 @@
     <string name="text_description">Description : </string>
     <string name="text_total">Total : </string>
     <string name="text_items_count">%1$d Items</string>
+    <string name="action_create_client">Create client</string>
 
 
 </resources>

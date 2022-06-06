@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.productcatalogapp.R;
-import com.example.productcatalogapp.classes.Product;
 import com.example.productcatalogapp.classes.ProductImage;
 
 import java.io.File;
@@ -33,7 +32,7 @@ public class ListProductImagesAdapter extends RecyclerView.Adapter<ListProductIm
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
-        View view = inflater.inflate(R.layout.item_list_view_product_image, parent, false);
+        View view = inflater.inflate(R.layout.item_product_image, parent, false);
         return new ListProductImagesAdapter.ViewHolder(view);
     }
 

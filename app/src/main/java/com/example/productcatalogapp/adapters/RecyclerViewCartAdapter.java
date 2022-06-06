@@ -1,17 +1,12 @@
 package com.example.productcatalogapp.adapters;
 
-import static android.view.ViewGroup.*;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +42,7 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
-        View view = inflater.inflate(R.layout.item_cart_item, parent, false);
+        View view = inflater.inflate(R.layout.item_cart, parent, false);
         return new RecyclerViewCartAdapter.ViewHolder(view);
     }
 
@@ -57,7 +52,7 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
 
         viewHolder.textViewTotal.setText(String.valueOf(cartLine.getTotalPrice()));
         viewHolder.textViewLabel.setText(cartLine.getProduct().getLabel());
-        viewHolder.editViewQuantity.setText(String.valueOf(cartLine.getQuantity()));
+        viewHolder.textViewQuantity.setText(String.valueOf(cartLine.getQuantity()));
         if (cartLine.getProduct().getImages() != null){
             ProductImage image = cartLine.getProduct().getImages().get(0);
             File imgFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES + "/ProductCatalogApp/" + image.getPath());
@@ -78,7 +73,7 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
         private ImageView imageViewProduct = null;
         private TextView textViewLabel = null;
         private Button buttonDecrement = null;
-        private EditText editViewQuantity = null;
+        private TextView textViewQuantity = null;
         private Button buttonIncrement = null;
         private TextView textViewTotal = null;
         private ImageButton imageButtonDelete = null;
@@ -89,7 +84,7 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
             @Override
             public void onClick(View v) {
                 LoadingActivity.cart.getCartLine(getAdapterPosition()).IncrementQuantity();
-                editViewQuantity.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getQuantity()));
+                textViewQuantity.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getQuantity()));
                 textViewTotal.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getTotalPrice()));
                 CatalogActivity.buttonCart.setText(context.getString(R.string.cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
                 CartActivity.updateCart();
@@ -101,7 +96,7 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
             public void onClick(View v) {
                 if (LoadingActivity.cart.getCartLine(getAdapterPosition()).getQuantity() > 1){
                     LoadingActivity.cart.getCartLine(getAdapterPosition()).DecrementQuantity();
-                    editViewQuantity.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getQuantity()));
+                    textViewQuantity.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getQuantity()));
                     textViewTotal.setText(String.valueOf(LoadingActivity.cart.getCartLine(getAdapterPosition()).getTotalPrice()));
                     CatalogActivity.buttonCart.setText(context.getString(R.string.cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
                     CartActivity.updateCart();
@@ -162,7 +157,7 @@ public class RecyclerViewCartAdapter extends RecyclerView.Adapter<RecyclerViewCa
             this.imageViewProduct = itemView.findViewById(R.id.idImageViewProduct);
             this.textViewLabel = itemView.findViewById(R.id.idTextViewLabel);
             this.buttonDecrement = itemView.findViewById(R.id.idButtonDecrement);
-            this.editViewQuantity = itemView.findViewById(R.id.idEditTextQuantity);
+            this.textViewQuantity = itemView.findViewById(R.id.idTextViewQuantity);
             this.buttonIncrement = itemView.findViewById(R.id.idButtonIncrement);
             this.textViewTotal = itemView.findViewById(R.id.idTextViewTotal);
             this.imageButtonDelete = itemView.findViewById(R.id.idButtonDelete);

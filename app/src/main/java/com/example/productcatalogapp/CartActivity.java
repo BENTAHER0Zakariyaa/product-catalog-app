@@ -3,6 +3,7 @@ package com.example.productcatalogapp;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,27 +13,32 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.productcatalogapp.adapters.ListClientAdapter;
 import com.example.productcatalogapp.adapters.RecyclerViewCartAdapter;
 import com.example.productcatalogapp.classes.Cart;
 import com.example.productcatalogapp.classes.Client;
 import com.example.productcatalogapp.classes.Command;
+import com.example.productcatalogapp.classes.CustomToast;
+import com.example.productcatalogapp.classes.DialogCreateCommand;
 
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class CartActivity extends AppCompatActivity {
 
 
     private RecyclerView recyclerViewCardProducts = null;
-    private Button buttonBack = null;
+    private ImageButton imageButtonBack = null;
     private Button buttonCreateCommand = null;
 
     public static TextView textViewTotal = null;
     public static TextView textViewItemsCount = null;
 
-    private View.OnClickListener onClickListenerButtonBack = new View.OnClickListener() {
+    private View.OnClickListener onClickListenerImageButtonBack = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             finish();
@@ -40,72 +46,17 @@ public class CartActivity extends AppCompatActivity {
     };
     private View.OnClickListener onClickListenerButtonCreateCommand = new View.OnClickListener() {
 
-        private AlertDialog.Builder createCommandDialogBuilder;
-        private AlertDialog createCommandAlert;
-
-        private EditText editTextFullName;
-        private EditText editTextCity;
-        private EditText editTextAddress;
-        private EditText editTextMainPhoneNumber;
-        private EditText editTextSecondPhoneNumber;
-        private EditText editTextEmail;
-        private Button buttonCreateCommand;
-
-        private View.OnClickListener onClickListenerCreateCommand= new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Client client = new Client();
-
-                client.setName(editTextFullName.getText().toString());
-                client.setTown(editTextCity.getText().toString());
-                client.setEmail(editTextEmail.getText().toString());
-                client.setAddress(editTextAddress.getText().toString());
-                client.setMainPhoneNumber(editTextMainPhoneNumber.getText().toString());
-                client.setSecondPhoneNumber(editTextSecondPhoneNumber.getText().toString());
-
-                if (client.getName().equals("")){
-                    Toast.makeText(CartActivity.this, R.string.error_name_required, Toast.LENGTH_SHORT).show();
-                }
-                else if (client.getTown().equals("")){
-                    Toast.makeText(CartActivity.this, R.string.error_town_required, Toast.LENGTH_SHORT).show();
-                }
-                else if(client.getAddress().equals("")){
-                    Toast.makeText(CartActivity.this, R.string.error_address_required, Toast.LENGTH_SHORT).show();
-                }
-                else if(client.getMainPhoneNumber().equals("")){
-                    Toast.makeText(CartActivity.this, R.string.error_main_phone_required, Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    client.setId(LoadingActivity.DB.addClient(client));
-                    LoadingActivity.DB.addCommand(LoadingActivity.cart.createCommand(client));
-                    recyclerViewCartAdapter.notifyDataSetChanged();
-                    CatalogActivity.buttonCart.setText(getString(R.string.cart, LoadingActivity.cart.getCount(), LoadingActivity.cart.getTotal()));
-                    createCommandAlert.dismiss();
-                }
-            }
-        };
-
         @Override
         public void onClick(View v) {
-
-            View dialogClientInfo = getLayoutInflater().inflate(R.layout.dialog_client_info, null);
-
-            this.editTextFullName = dialogClientInfo.findViewById(R.id.idEditTextName);
-            this.editTextCity = dialogClientInfo.findViewById(R.id.idEditTextTown);
-            this.editTextAddress = dialogClientInfo.findViewById(R.id.idEditTextAddress);
-            this.editTextMainPhoneNumber = dialogClientInfo.findViewById(R.id.idEditTextMainPhoneNumber);
-            this.editTextSecondPhoneNumber = dialogClientInfo.findViewById(R.id.idEditTextSecondPhoneNumber);
-            this.editTextEmail = dialogClientInfo.findViewById(R.id.idEditTextEmail);
-            this.buttonCreateCommand = dialogClientInfo.findViewById(R.id.idButtonCreateCommand);
-
-            this.buttonCreateCommand.setOnClickListener(onClickListenerCreateCommand);
-
-            this.createCommandDialogBuilder = new AlertDialog.Builder(CartActivity.this);
-            this.createCommandDialogBuilder.setView(dialogClientInfo);
-            this.createCommandAlert = createCommandDialogBuilder.create();
-            this.createCommandAlert.show();
-
+            if (LoadingActivity.cart.isNotEmpty()){
+                Intent intent = new Intent(CartActivity.this, CreateCommandActivity.class);
+                startActivity(intent);
+            }else{
+                CustomToast toast = new CustomToast(CartActivity.this, R.string.error_cart_is_empty, R.drawable.ic_cart_64);
+                toast.Make();
+                toast.Show();
+                finish();
+            }
         }
     };
 
@@ -117,17 +68,17 @@ public class CartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cart);
 
         this.recyclerViewCardProducts = this.findViewById(R.id.idRecyclerViewCardProducts);
-        this.buttonBack = this.findViewById(R.id.idButtonBack);
+        this.imageButtonBack = this.findViewById(R.id.idImageButtonBack);
         this.buttonCreateCommand = this.findViewById(R.id.idButtonCreateCommand);
         this.textViewTotal = this.findViewById(R.id.idTextViewTotal);
         this.textViewItemsCount = this.findViewById(R.id.idTextViewItemsCount);
-
-        this.buttonBack.setOnClickListener(onClickListenerButtonBack);
+        this.imageButtonBack.setOnClickListener(onClickListenerImageButtonBack);
         this.buttonCreateCommand.setOnClickListener(onClickListenerButtonCreateCommand);
+
         updateCart();
     }
-    public static void updateCart(){
 
+    public static void updateCart(){
         textViewTotal.setText(String.valueOf(LoadingActivity.cart.getTotal()));
         textViewItemsCount.setText(textViewTotal.getContext().getString(R.string.text_items_count, LoadingActivity.cart.getCount()));
     }

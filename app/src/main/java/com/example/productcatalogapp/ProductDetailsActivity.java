@@ -3,6 +3,7 @@ package com.example.productcatalogapp;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.support.constraint.utils.ImageFilterButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,6 +14,7 @@ import android.support.v7.widget.SnapHelper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,10 +30,10 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private TextView textViewPrice = null;
     private TextView textViewDescription = null;
     private TextView textViewCategory = null;
-    private Button buttonBack = null;
+    private ImageButton imageButtonBack = null;
     private RecyclerView recyclerViewProductImages = null;
 
-    private View.OnClickListener onClickListenerButtonBack = new View.OnClickListener() {
+    private View.OnClickListener onClickListenerImageButtonBackBack = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             finish();
@@ -49,8 +51,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
         this.textViewCategory  = this.findViewById(R.id.idTextViewCategory);
         this.recyclerViewProductImages  = this.findViewById(R.id.idRecyclerViewProductImages);
 
-        this.buttonBack = this.findViewById(R.id.idButtonBack);
-        this.buttonBack.setOnClickListener(onClickListenerButtonBack);
+        this.imageButtonBack = this.findViewById(R.id.idImageButtonBack);
+        this.imageButtonBack.setOnClickListener(this.onClickListenerImageButtonBackBack);
 
         Bundle bundle = getIntent().getExtras();
         int productId = bundle.getInt("productId");

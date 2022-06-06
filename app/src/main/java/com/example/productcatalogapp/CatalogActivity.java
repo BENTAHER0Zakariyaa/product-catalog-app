@@ -433,6 +433,7 @@ public class CatalogActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            mainGridViewAdapter.notifyDataSetChanged();
         }
     }
 
